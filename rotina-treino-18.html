@@ -1,0 +1,2485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Treino</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8fa055">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Treino">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+  :root{
+    --bg:#0c0d09;
+    --surface:#15170f;
+    --surface-2:#1d2015;
+    --ivory:#eceee3;
+    --coral:#8fa055;
+    --coral-dim:#4f5a2c;
+    --steel:#6b7458;
+    --muted:#83876f;
+    --line:#282c1c;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ivory);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .bar{
+    height:8px;
+    background:repeating-linear-gradient(90deg, var(--coral) 0 22px, transparent 22px 34px);
+    opacity:.5;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px 80px;}
+  header.top{padding:26px 0 6px;}
+  .eyebrow{
+    font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--coral);
+    margin:0 0 6px;
+  }
+  h1{
+    font-family:Georgia,'Times New Roman',serif;
+    font-weight:600;
+    font-size:30px;
+    margin:0 0 4px;
+    letter-spacing:-.01em;
+  }
+  .sub{color:var(--muted);font-size:14px;margin:0 0 18px;}
+
+  nav.tabs{
+    display:flex; gap:4px;
+    background:var(--surface);
+    border-radius:999px;
+    padding:4px;
+    margin:18px 0 22px;
+  }
+  nav.tabs button{
+    flex:1; border:none; background:transparent;
+    color:var(--muted); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    font-weight:600; font-size:13.5px;
+    padding:10px 14px; border-radius:999px; cursor:pointer;
+    transition:background .18s ease, color .18s ease;
+  }
+  nav.tabs button.active{background:var(--coral); color:#0c0d09;}
+  nav.tabs button:focus-visible{outline:2px solid var(--steel); outline-offset:2px;}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:16px;
+  }
+  .card h2{font-family:Georgia,'Times New Roman',serif; font-size:19px; font-weight:600; margin:0 0 4px;}
+  .card .meta{font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:12px; color:var(--steel); margin:0 0 14px;}
+
+  .badge{
+    display:inline-block; font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace;
+    font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+    padding:3px 9px; border-radius:999px;
+    background:rgba(143,160,85,.15); color:var(--coral);
+    border:1px solid rgba(143,160,85,.35);
+  }
+
+  .block-group{margin-bottom:14px;}
+  .block-group h3{
+    font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace;
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--steel); margin:0 0 8px;
+  }
+  .ex-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:9px 0; border-bottom:1px solid var(--line); font-size:13.5px;
+  }
+  .ex-row:last-child{border-bottom:none;}
+  .ex-row .name{color:var(--ivory);}
+  .ex-row .spec{font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:12px; color:var(--muted);}
+
+  .checklist{list-style:none;margin:0;padding:0;}
+  .checklist li{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 0; font-size:14px; border-bottom:1px solid var(--line);
+  }
+  .checklist li:last-child{border-bottom:none;}
+  .checklist input[type=checkbox]{width:18px;height:18px;accent-color:var(--coral);flex-shrink:0;}
+  .checklist label.done{color:var(--muted); text-decoration:line-through;}
+
+  .timer-box{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface-2); border-radius:10px; padding:14px 16px; margin:14px 0;
+  }
+  .timer-display{font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:28px; font-weight:600; letter-spacing:.02em;}
+
+  .btn{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-weight:600; font-size:13.5px;
+    padding:9px 16px; border-radius:8px; border:1px solid var(--line);
+    background:var(--surface-2); color:var(--ivory); cursor:pointer;
+    transition:transform .12s ease, border-color .12s ease;
+  }
+  .btn:hover{border-color:var(--coral);}
+  .btn:active{transform:scale(.97);}
+  .btn.primary{background:var(--coral); color:#0c0d09; border-color:var(--coral);}
+  .btn.primary:hover{background:#a3b56b;}
+  .btn.ghost{background:transparent;}
+  .btn.full{width:100%;}
+  .btn:focus-visible{outline:2px solid var(--steel); outline-offset:2px;}
+
+  label.field-label{display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin:14px 0 6px;}
+  textarea, input[type=text], input[type=number]{
+    width:100%; background:var(--surface-2); border:1px solid var(--line);
+    border-radius:8px; color:var(--ivory); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    font-size:14px; padding:10px 12px; resize:vertical;
+  }
+  select{
+    width:100%; background:var(--surface-2); border:1px solid var(--line);
+    border-radius:8px; color:var(--ivory); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    font-size:14px; padding:10px 12px;
+  }
+  textarea:focus, input:focus{outline:2px solid var(--steel); outline-offset:1px;}
+
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+
+  .diff-row{display:flex; gap:8px; margin-top:6px;}
+  .diff-dot{
+    flex:1; text-align:center; padding:9px 0; border-radius:8px;
+    border:1px solid var(--line); background:var(--surface-2);
+    font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:13px; cursor:pointer; color:var(--muted);
+  }
+  .diff-dot.selected{background:var(--coral-dim); border-color:var(--coral-dim); color:var(--ivory);}
+
+  .toggle-row{display:flex; gap:8px; margin-top:6px;}
+  .toggle-row .btn{flex:1;}
+  .toggle-row .btn.on{background:var(--steel); border-color:var(--steel); color:#12181d;}
+
+  .skip-note{font-size:13px; color:var(--muted); line-height:1.5; margin-top:2px;}
+
+  .streak-row{display:flex; gap:10px; margin-bottom:16px;}
+  .stat{
+    flex:1; background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:14px 12px; text-align:center;
+  }
+  .stat .num{font-family:Georgia,'Times New Roman',serif; font-size:26px; font-weight:600; color:var(--coral); display:block;}
+  .stat .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;}
+
+  .log-entry{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:12px; padding:14px 16px; margin-bottom:10px;
+  }
+  .log-entry .top-row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
+  .log-entry .day{font-family:Georgia,'Times New Roman',serif; font-weight:600; font-size:15px;}
+  .log-entry .date{font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:11.5px; color:var(--muted);}
+  .log-entry .work{font-size:13.5px; color:var(--ivory); margin-bottom:6px;}
+  .log-entry .foot{display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted);}
+  .log-entry.skipped{opacity:.6; border-style:dashed;}
+  .log-entry.skipped .work{font-style:italic;}
+
+  .empty{text-align:center; color:var(--muted); font-size:13.5px; padding:30px 10px;}
+
+  footer.credit{
+    text-align:center; font-size:11px; color:var(--muted);
+    margin-top:24px; font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace;
+  }
+  .ex-input-row{
+    padding:10px 0; border-bottom:1px solid var(--line);
+  }
+  .ex-input-row:last-child{border-bottom:none;}
+  .ex-input-row .ex-name{font-size:13.5px; color:var(--ivory); margin-bottom:0; display:flex; justify-content:space-between; align-items:baseline; flex:1;}
+  .ex-name-row{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .ex-thumb{width:52px; height:auto; flex-shrink:0; background:var(--surface-2); border-radius:8px; padding:4px;}
+  .ex-thumb svg{width:100%; height:auto; display:block;}
+  .ex-input-row .ex-target{font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:11px; color:var(--muted);}
+  .ex-fields{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;}
+  .ex-fields .field{display:flex; flex-direction:column; gap:3px;}
+  .ex-fields label{font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+  .ex-fields input{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:6px;
+    color:var(--ivory); font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:14px;
+    padding:7px 8px; width:100%;
+  }
+  .ex-fields input:focus{outline:2px solid var(--steel); outline-offset:1px;}
+
+  .evo-card{margin-bottom:10px;}
+  .evo-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+  .evo-head .ex-title{font-family:Georgia,'Times New Roman',serif; font-weight:600; font-size:15px;}
+  .evo-delta{font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:12px; padding:2px 8px; border-radius:999px;}
+  .evo-delta.up{background:rgba(107,116,88,.2); color:var(--steel);}
+  .evo-delta.down{background:rgba(143,160,85,.15); color:var(--coral);}
+  .evo-delta.flat{background:var(--surface-2); color:var(--muted);}
+  .evo-history{display:flex; gap:6px; flex-wrap:wrap;}
+  .evo-pill{
+    font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:11px; color:var(--muted);
+    background:var(--surface-2); border:1px solid var(--line);
+    border-radius:6px; padding:4px 8px;
+  }
+  .evo-pill.latest{border-color:var(--coral); color:var(--ivory);}
+
+  .ex-details{margin-top:6px;}
+  .ex-details summary{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--steel);
+    cursor:pointer; list-style:none; padding:2px 0;
+  }
+  .ex-details summary::-webkit-details-marker{display:none;}
+  .ex-details summary::before{content:"▸ "; }
+  .ex-details[open] summary::before{content:"▾ "; }
+  .ex-details-body{
+    background:var(--surface-2); border-radius:8px; padding:10px 12px; margin-top:6px;
+  }
+  .ex-details-body p{font-size:12.5px; line-height:1.5; margin:0 0 6px; color:var(--ivory);}
+  .ex-details-body p:last-of-type{margin-bottom:8px;}
+  .ex-details-body strong{color:var(--coral); font-weight:600;}
+  .ex-link{
+    display:inline-block; font-family:'Inter',sans-serif; font-weight:600; font-size:12.5px;
+    color:var(--steel); text-decoration:none;
+    background:none; border:none; padding:0; cursor:pointer;
+  }
+  .ex-link:hover{text-decoration:underline;}
+  .video-override-row{display:flex; gap:6px; margin-top:8px;}
+  .video-override-row input{
+    flex:1; background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    color:var(--ivory); font-family:'Inter',sans-serif; font-size:11.5px; padding:6px 8px;
+  }
+  .video-override-row .btn{padding:6px 10px; font-size:11.5px;}
+
+  .warmup-item{width:100%;}
+  .warmup-check{display:flex; align-items:center; gap:10px;}
+  .split-toggle{display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;}
+  .split-toggle .btn{font-size:11.5px; padding:6px 10px;}
+  .split-toggle .btn.active-split{background:var(--coral); color:#0c0d09; border-color:var(--coral);}
+
+  .muscle-svg{width:100%; max-width:280px; height:auto; margin:8px 0 10px; display:block;}
+  .muscle-svg text{fill:var(--muted); font-size:6px; font-family:'IBM Plex Mono',monospace; letter-spacing:.04em;}
+  .muscle-svg .body-part{fill:var(--surface); stroke:var(--line); stroke-width:1;}
+  .muscle-svg .region{fill:transparent; stroke:var(--muted); stroke-width:.8; stroke-dasharray:2,2;}
+  .muscle-svg .region.active{fill:var(--coral); fill-opacity:.55; stroke:var(--coral); stroke-dasharray:none; stroke-width:1;}
+
+  .suggestion-badge{
+    display:inline-flex; align-items:center; gap:5px;
+    font-family:'IBM Plex Mono',monospace; font-size:11px;
+    padding:4px 9px; border-radius:999px; margin:6px 0;
+  }
+  .suggestion-badge.up{background:rgba(143,160,85,.18); color:var(--coral);}
+  .suggestion-badge.hold{background:rgba(107,116,88,.18); color:var(--steel);}
+  .suggestion-badge.new{background:var(--surface-2); color:var(--muted);}
+
+  .set-dots{display:flex; gap:6px; margin:8px 0;}
+  .set-dot{
+    width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono',monospace; font-size:10px; border:1px solid var(--line); color:var(--muted);
+  }
+  .set-dot.done{background:var(--coral); border-color:var(--coral); color:#0c0d09;}
+  .set-dot.current{border-color:var(--coral); color:var(--coral);}
+
+  .set-form{display:flex; gap:8px; align-items:flex-end; margin-top:8px;}
+  .set-form .field{flex:1; display:flex; flex-direction:column; gap:3px;}
+  .set-form .field label{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase;}
+  .set-form input{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:6px;
+    color:var(--ivory); font-family:'IBM Plex Mono',monospace; font-size:14px; padding:8px; width:100%;
+  }
+  .set-form .btn{flex:0 0 auto;}
+
+  .rest-box{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface-2); border-radius:10px; padding:12px 14px; margin-top:8px;
+  }
+  .rest-box .rest-time{font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600; color:var(--steel);}
+  .rest-box.transition-box{border:1px solid var(--brass, var(--coral)); }
+  .rest-box.transition-box .rest-time{color:var(--coral);}
+  .rest-box .rest-label{font-size:11.5px; color:var(--muted);}
+
+  .set-log-row{
+    display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace;
+    font-size:12px; color:var(--muted); padding:4px 0; border-bottom:1px solid var(--line);
+  }
+  .set-log-row:last-child{border-bottom:none;}
+  .ex-done-tag{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px;
+    color:var(--steel); background:rgba(107,116,88,.15); padding:3px 9px; border-radius:999px; margin-top:8px;
+  }
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:100;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .modal-box{
+    background:var(--surface); border:1px solid var(--line); border-radius:16px;
+    padding:22px; max-width:340px; width:100%; text-align:center;
+  }
+  .modal-box p{font-family:'Fraunces',serif; font-size:17px; margin:0 0 18px; line-height:1.4;}
+  .modal-box.video-modal-box{max-width:480px;}
+  .video-embed-wrap{position:relative; width:100%; padding-top:56.25%; border-radius:10px; overflow:hidden; background:#000;}
+  .video-embed-wrap iframe{position:absolute; top:0; left:0; width:100%; height:100%; border:0;}
+  .modal-actions{display:flex; gap:10px;}
+  .modal-actions .btn{flex:1;}
+
+  .plank-timer{
+    text-align:center; padding:14px 0;
+  }
+  .plank-timer .big-num{
+    font-family:'IBM Plex Mono',monospace; font-size:44px; font-weight:600; color:var(--coral);
+    display:block; margin-bottom:10px;
+  }
+  .plank-timer .phase-label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;}
+
+  .skip-set-btn{
+    background:transparent; border:none; color:var(--muted);
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-decoration:underline;
+    cursor:pointer; padding:6px 0; align-self:center;
+  }
+
+  .tempo-flag{font-size:11px; padding:1px 6px; border-radius:5px; margin-left:6px;}
+  .tempo-flag.fast{background:rgba(143,160,85,.15); color:var(--coral);}
+  .tempo-flag.slow{background:rgba(107,116,88,.15); color:var(--steel);}
+
+  .praise-line{
+    font-family:'Fraunces',serif; font-size:13.5px; color:var(--coral);
+    margin-top:6px; font-weight:600;
+  }
+
+  /* ---------- capa ---------- */
+  #coverScreen{
+    position:fixed; inset:0; z-index:999;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(143,160,85,.25), transparent 55%),
+      radial-gradient(circle at 85% 80%, rgba(107,116,88,.20), transparent 55%),
+      var(--bg);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:32px; overflow-y:auto;
+  }
+  #coverScreen .cover-eyebrow{
+    font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace;
+    font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--coral); margin-bottom:14px;
+    white-space:nowrap;
+  }
+  #coverScreen h1{
+    font-family:Georgia,'Times New Roman',serif; font-size:38px; line-height:1.15;
+    margin:0 0 12px; color:var(--ivory);
+  }
+  #coverScreen .cover-sub{
+    font-size:14.5px; color:var(--muted); max-width:340px; margin:0 0 30px; line-height:1.5;
+  }
+  #coverScreen .cover-stats{
+    display:flex; gap:10px; margin-bottom:34px;
+  }
+  #coverScreen .cover-stats .stat{min-width:82px;}
+  #coverScreen .cover-line{
+    width:44px; height:3px; background:var(--coral); border-radius:2px; margin-bottom:24px;
+  }
+  #coverStartBtn{font-size:15px; padding:14px 34px; letter-spacing:.02em;}
+
+  /* ---------- grade semanal ---------- */
+  .week-grid{display:flex; gap:6px; margin-bottom:16px;}
+  .week-day{
+    flex:1; text-align:center; padding:10px 0 8px; border-radius:10px;
+    background:var(--surface); border:1px solid var(--line);
+  }
+  .week-day .wd-lbl{
+    display:block; font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace;
+    font-size:10px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;
+  }
+  .week-day .wd-mark{
+    display:flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:50%; margin:0 auto;
+    font-size:13px; border:1.5px solid var(--line); color:var(--muted);
+  }
+  .week-day.today{border-color:var(--coral);}
+  .week-day.today .wd-lbl{color:var(--coral);}
+  .week-day.done .wd-mark{background:var(--coral); border-color:var(--coral); color:#0c0d09; font-weight:700;}
+  .week-day.skipped .wd-mark{border-style:dashed; color:var(--muted);}
+  .week-day.pending .wd-mark{background:transparent;}
+  .week-day.rest{opacity:.55;}
+  .week-day.rest .wd-mark{background:transparent; border-style:dotted; font-size:12px;}
+
+  /* ---------- peso corporal ---------- */
+  .bw-form{display:flex; gap:8px; align-items:flex-end;}
+  .bw-form input{flex:1;}
+  .bw-list{margin-top:14px;}
+  .bw-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:8px 0; border-bottom:1px solid var(--line); font-size:13.5px;
+  }
+  .bw-row:last-child{border-bottom:none;}
+  .bw-row .bw-date{font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:11.5px; color:var(--muted);}
+  .bw-row .bw-val{color:var(--ivory); font-weight:600;}
+  .bw-row .bw-delta{font-family:ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace; font-size:11.5px;}
+  .bw-row .bw-delta.down{color:var(--coral);}
+  .bw-row .bw-delta.up{color:var(--steel);}
+</style>
+</head>
+<body>
+
+<div id="coverScreen">
+  <p class="cover-eyebrow">Força . Funcional . Resistência Diária</p>
+  <h1 id="coverTitle">Hoje é o melhor dia para treinar</h1>
+  <div class="cover-line"></div>
+  <div class="cover-stats">
+    <div class="stat"><span class="num" id="coverStreak">0</span><span class="lbl">sequência</span></div>
+    <div class="stat"><span class="num" id="coverWeek">0/5</span><span class="lbl">esta semana</span></div>
+    <div class="stat"><span class="num" id="coverTotal">0</span><span class="lbl">sessões total</span></div>
+  </div>
+  <button class="btn primary" id="coverStartBtn">Começar treino de hoje</button>
+</div>
+
+<div class="bar"></div>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">Força · funcional · consistência diária</p>
+    <h1>Treino de Musculação</h1>
+    <p class="sub" id="todayLabel">—</p>
+    <button class="skip-set-btn" id="resetTodayBtn" style="margin-top:6px;">reiniciar sessão de hoje (zera só as séries de hoje, não mexe no histórico)</button>
+  </header>
+
+  <nav class="tabs">
+    <button id="tabSessionBtn" class="active">Sessão de hoje</button>
+    <button id="tabDashBtn">Painel semanal</button>
+    <button id="tabHistoryBtn">Histórico</button>
+  </nav>
+
+  <!-- SESSION VIEW -->
+  <section id="viewSession">
+
+    <div class="card">
+      <h2>🎵 Música</h2>
+      <p class="meta">Escolha um áudio salvo no celular pra tocar direto aqui, com barra de progresso — sem depender do YouTube.</p>
+      <div id="localAudioWrap" style="display:none; margin-bottom:12px;">
+        <p class="meta" id="localAudioName" style="margin-bottom:6px;"></p>
+        <audio id="localAudioPlayer" controls style="width:100%;"></audio>
+      </div>
+      <label class="btn primary full" for="localAudioInput" style="display:block; text-align:center; cursor:pointer;">Escolher arquivo de áudio do celular</label>
+      <input type="file" id="localAudioInput" accept="audio/*" style="display:none;">
+
+      <details style="margin-top:14px;">
+        <summary class="meta" style="cursor:pointer;">Ou usar playlist do YouTube em vez disso</summary>
+        <p class="meta" style="margin-top:8px;">Só funciona se o vídeo/playlist permitir incorporação — nem todos permitem.</p>
+        <div id="musicPlayerWrap" style="display:none; margin:10px 0;"></div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="musicUrlInput" placeholder="Cole o link da playlist do YouTube" style="flex:1;">
+          <button class="btn primary" id="musicSaveBtn">Tocar</button>
+        </div>
+        <button class="btn ghost full" id="musicClearBtn" style="margin-top:8px; display:none;">Remover playlist</button>
+      </details>
+    </div>
+
+    <div class="card">
+      <span class="badge">06:00 – 06:50</span>
+      <h2>Treino do dia</h2>
+      <p class="meta" id="splitLabel">—</p>
+      <div class="split-toggle">
+        <button class="btn ghost" id="forceABtn">Forçar Treino A</button>
+        <button class="btn ghost" id="forceBBtn">Forçar Treino B</button>
+        <button class="btn ghost" id="forceAutoBtn" style="display:none;">Voltar ao automático</button>
+      </div>
+
+      <div id="exerciseBlocks"></div>
+      <p class="skip-note">Sugestão de carga já vem preenchida — ajuste se sentir necessário. Ao concluir um exercício, ele sai da lista e vai pro resumo abaixo.</p>
+    </div>
+
+    <div class="card">
+      <h2>🏃 Cardio livre</h2>
+      <p class="meta">Independente da bicicleta — registre aqui sempre que fizer cardio em outro horário do dia. Dá pra registrar os dois no mesmo dia sem problema.</p>
+
+      <label class="field-label" for="cardioType">Tipo de atividade</label>
+      <select id="cardioType">
+        <option value="corrida">Corrida</option>
+        <option value="caminhada">Caminhada</option>
+        <option value="bicicleta">Bicicleta (rua/spinning)</option>
+        <option value="eliptico">Elíptico</option>
+        <option value="natacao">Natação</option>
+        <option value="outro">Outro</option>
+      </select>
+
+      <label class="field-label" for="cardioDuration">Duração (minutos)</label>
+      <input type="number" id="cardioDuration" step="1" min="1" placeholder="ex: 30">
+
+      <label class="field-label" for="cardioDistance">Distância (km) — opcional</label>
+      <input type="number" id="cardioDistance" step="0.1" min="0" placeholder="ex: 4.5">
+
+      <p class="skip-note" id="cardioEstimateNote" style="margin-top:10px;"></p>
+
+      <button class="btn primary full" id="cardioSaveBtn" style="margin-top:12px;">Registrar cardio</button>
+
+      <div id="cardioTodayList" style="margin-top:14px;"></div>
+    </div>
+
+    <div class="card" id="completedCard" style="display:none;">
+      <h2>Concluídos hoje</h2>
+      <div id="sessionStats" class="streak-row" style="margin-bottom:14px;"></div>
+      <div id="completedList"></div>
+      <button class="btn primary full" id="shareReportBtn" style="margin-top:12px;">📤 Compartilhar relatório</button>
+      <p class="skip-note" id="shareNote" style="margin-top:8px; display:none;"></p>
+      <textarea id="shareTextarea" readonly style="display:none; margin-top:8px; height:140px;"></textarea>
+    </div>
+
+    <div id="modalRoot"></div>
+
+    <div class="card">
+      <h2>Resumo em áudio</h2>
+      <p class="meta">Toque antes de começar — dá pra ouvir enquanto faz a mobilidade</p>
+      <button class="btn primary full" id="playBriefBtn">🔊 Ouvir resumo do treino</button>
+      <button class="btn ghost full" id="stopBriefBtn" style="margin-top:8px; display:none;">⏹ Parar</button>
+      <p class="skip-note" id="voiceNote" style="margin-top:10px;"></p>
+    </div>
+
+    <div class="card">
+      <h2>Mobilidade / ativação</h2>
+      <p class="meta">1-2 min · a bike já está na ficha, isso aqui é só mobilidade extra</p>
+      <ul class="checklist" id="warmupList">
+        <li>
+          <div class="warmup-item">
+            <div class="warmup-check"><input type="checkbox" id="w1"><label for="w1">Mobilidade de quadril + tornozelo</label></div>
+            <details class="ex-details">
+              <summary>Como fazer</summary>
+              <div class="ex-details-body">
+                <p id="w1-explain"></p><div id="w1-svg"></div>
+                <button class="ex-link video-link-btn" id="w1-link" data-video-url="">▶ Ver exemplo em vídeo</button>
+              </div>
+            </details>
+          </div>
+        </li>
+        <li>
+          <div class="warmup-item">
+            <div class="warmup-check"><input type="checkbox" id="w2"><label for="w2">Ativação de glúteo/core</label></div>
+            <details class="ex-details">
+              <summary>Como fazer</summary>
+              <div class="ex-details-body">
+                <p id="w2-explain"></p><div id="w2-svg"></div>
+                <button class="ex-link video-link-btn" id="w2-link" data-video-url="">▶ Ver exemplo em vídeo</button>
+              </div>
+            </details>
+          </div>
+        </li>
+        <li>
+          <div class="warmup-item">
+            <div class="warmup-check"><input type="checkbox" id="w3"><label for="w3">Mobilidade de ombro/coluna torácica</label></div>
+            <details class="ex-details">
+              <summary>Como fazer</summary>
+              <div class="ex-details-body">
+                <p id="w3-explain"></p><div id="w3-svg"></div>
+                <button class="ex-link video-link-btn" id="w3-link" data-video-url="">▶ Ver exemplo em vídeo</button>
+              </div>
+            </details>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Cronômetro da sessão</h2>
+      <div class="timer-box">
+        <span class="timer-display" id="timerDisplay">00:00</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" id="timerToggle">Iniciar</button>
+          <button class="btn ghost" id="timerReset">Zerar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Registrar sessão</h2>
+      <p class="meta">Cada série já fica salva ao concluir — aqui é só o fechamento do dia</p>
+
+      <label class="field-label" for="workedField">Observações (opcional)</label>
+      <textarea id="workedField" rows="2" placeholder="ex: dor leve no ombro direito, ajustar pegada"></textarea>
+
+      <label class="field-label">Como estava a energia hoje?</label>
+      <div class="diff-row" id="diffRow">
+        <div class="diff-dot" data-v="1">1</div>
+        <div class="diff-dot" data-v="2">2</div>
+        <div class="diff-dot" data-v="3">3</div>
+        <div class="diff-dot" data-v="4">4</div>
+        <div class="diff-dot" data-v="5">5</div>
+      </div>
+
+      <label class="field-label" for="nextField">Próxima sessão, foco em</label>
+      <input type="text" id="nextField" placeholder="ex: técnica na remada">
+
+      <button class="btn primary full" id="saveLogBtn" style="margin-top:16px;">Fechar sessão</button>
+      <button class="btn ghost full" id="skipBtn" style="margin-top:8px;">Pular hoje (sem culpa)</button>
+    </div>
+
+  </section>
+
+  <!-- DASHBOARD VIEW -->
+  <section id="viewDash" style="display:none;">
+
+    <div class="streak-row">
+      <div class="stat"><span class="num" id="statStreak">0</span><span class="lbl">sequência</span></div>
+      <div class="stat"><span class="num" id="statWeek">0/5</span><span class="lbl">esta semana</span></div>
+      <div class="stat"><span class="num" id="statTotal">0</span><span class="lbl">sessões total</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Dias treinados nesta semana</h2>
+      <p class="meta">Segunda a sexta = treino · sábado e domingo = descanso</p>
+      <div class="week-grid" id="weekGrid"></div>
+    </div>
+
+    <div class="card">
+      <h2>Grade fixa</h2>
+      <p class="meta">Segunda a sexta · 06:00-06:50 · bike já incluída na ficha</p>
+    </div>
+
+    <div class="card">
+      <h2>Peso corporal</h2>
+      <p class="meta">Registre quando pesar — só uma vez por dia é suficiente</p>
+      <div class="bw-form">
+        <div style="flex:1;">
+          <label class="field-label" for="bwInput" style="margin-top:0;">Peso de hoje (kg)</label>
+          <input type="number" id="bwInput" step="0.1" placeholder="ex: 68.4">
+        </div>
+        <button class="btn primary" id="bwSaveBtn">Registrar</button>
+      </div>
+      <div class="bw-list" id="bwList"><p class="empty">Nenhum registro ainda.</p></div>
+    </div>
+
+    <div class="card">
+      <h2>Evolução por exercício</h2>
+      <p class="meta">Peso mais recente vs. sessão anterior</p>
+      <div id="evolutionList"><p class="empty">Registre a primeira sessão pra começar a ver a evolução aqui.</p></div>
+    </div>
+
+    <div class="card">
+      <h2>Histórico recente</h2>
+      <div id="logHistory"><p class="empty">Nenhum registro ainda. Sua primeira sessão aparece aqui.</p></div>
+    </div>
+
+    <button class="btn ghost full" id="clearBtn">Apagar todo o histórico</button>
+
+  </section>
+
+  <!-- HISTORY VIEW -->
+  <section id="viewHistory" style="display:none;">
+
+    <div class="card">
+      <h2>Histórico completo</h2>
+      <p class="meta">Filtre por ano e mês pra ver o que você fez em qualquer período</p>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <select id="histYear" style="flex:1;"></select>
+        <select id="histMonth" style="flex:1;"></select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="streak-row">
+        <div class="stat"><span class="num" id="histStatDone">0</span><span class="lbl">treinos feitos</span></div>
+        <div class="stat"><span class="num" id="histStatSkipped">0</span><span class="lbl">pulados</span></div>
+        <div class="stat"><span class="num" id="histStatMinutes">0</span><span class="lbl">min treinados</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 id="histMonthLabel">—</h2>
+      <div id="histMonthList"><p class="empty">Sem registros neste período.</p></div>
+    </div>
+
+  </section>
+
+  <footer class="credit">rotina-treino · registro pessoal · armazenado neste dispositivo</footer>
+</div>
+
+<script>
+(function(){
+  // Camada de armazenamento: usa window.storage quando disponível (dentro do Claude),
+  // e cai pra localStorage quando o arquivo roda standalone no navegador/celular
+  // (que é o uso real deste app, salvo direto na tela inicial).
+  const appStorage = (function(){
+    if(window.storage && typeof window.storage.get === 'function' && typeof window.storage.set === 'function'){
+      return window.storage;
+    }
+    return {
+      get: async (key) => {
+        let val;
+        try{ val = localStorage.getItem(key); } catch(e){ throw new Error('storage indisponível'); }
+        if(val === null) throw new Error('not found');
+        return { key, value: val };
+      },
+      set: async (key, value) => {
+        try{ localStorage.setItem(key, value); } catch(e){ /* segue mesmo se falhar */ }
+        return { key, value };
+      }
+    };
+  })();
+
+  const STORAGE_KEY = 'gym-practice-logs';
+  const BODYWEIGHT_KEY = 'gym-bodyweight-logs';
+  const MUSIC_KEY = 'gym-music-url';
+  const VIDEO_OVERRIDES_KEY = 'gym-video-overrides';
+  let videoOverrides = {};
+
+  async function loadVideoOverrides(){
+    try{
+      const res = await appStorage.get(VIDEO_OVERRIDES_KEY, false);
+      return res && res.value ? JSON.parse(res.value) : {};
+    }catch(e){ return {}; }
+  }
+  async function saveVideoOverride(exId, url){
+    videoOverrides[exId] = url;
+    try{ await appStorage.set(VIDEO_OVERRIDES_KEY, JSON.stringify(videoOverrides), false); }
+    catch(e){ /* segue mesmo se falhar */ }
+  }
+
+  function renderMusicEmbed(url){
+    const wrap = document.getElementById('musicPlayerWrap');
+    const playlistId = extractYouTubePlaylistId(url);
+    const videoId = extractYouTubeId(url);
+    let src = null;
+    if(playlistId) src = `https://www.youtube.com/embed/videoseries?list=${playlistId}`;
+    else if(videoId) src = `https://www.youtube.com/embed/${videoId}`;
+
+    if(!src){
+      wrap.style.display = 'none';
+      return false;
+    }
+    wrap.innerHTML = `<div class="video-embed-wrap"><iframe src="${src}" title="Player de música" frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+    wrap.style.display = 'block';
+    return true;
+  }
+
+  async function initMusicPlayer(){
+    let saved = null;
+    try{
+      const res = await appStorage.get(MUSIC_KEY, false);
+      saved = res ? res.value : null;
+    }catch(e){ saved = null; }
+    if(saved){
+      document.getElementById('musicUrlInput').value = saved;
+      const ok = renderMusicEmbed(saved);
+      document.getElementById('musicClearBtn').style.display = ok ? 'block' : 'none';
+    }
+  }
+
+  document.getElementById('localAudioInput').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+    const player = document.getElementById('localAudioPlayer');
+    player.src = url;
+    document.getElementById('localAudioName').textContent = '▶ ' + file.name;
+    document.getElementById('localAudioWrap').style.display = 'block';
+    player.play().catch(()=>{ /* alguns navegadores exigem toque no play, tudo bem */ });
+  });
+
+  document.getElementById('musicSaveBtn').addEventListener('click', async ()=>{
+    const url = document.getElementById('musicUrlInput').value.trim();
+    if(!url){ alert('Cola o link da playlist ou vídeo primeiro.'); return; }
+    const ok = renderMusicEmbed(url);
+    if(!ok){ alert('Não consegui reconhecer esse link do YouTube.'); return; }
+    try{ await appStorage.set(MUSIC_KEY, url, false); }catch(e){ /* segue mesmo se falhar */ }
+    document.getElementById('musicClearBtn').style.display = 'block';
+  });
+
+  document.getElementById('musicClearBtn').addEventListener('click', async ()=>{
+    document.getElementById('musicUrlInput').value = '';
+    document.getElementById('musicPlayerWrap').style.display = 'none';
+    document.getElementById('musicPlayerWrap').innerHTML = '';
+    document.getElementById('musicClearBtn').style.display = 'none';
+    try{ await appStorage.set(MUSIC_KEY, '', false); }catch(e){}
+  });
+
+  const HISTORY_KEY = 'gym-exercise-history';
+  const CARDIO_KEY = 'gym-cardio-logs';
+
+  async function loadCardioLogs(){
+    try{
+      const res = await appStorage.get(CARDIO_KEY, false);
+      return res && res.value ? JSON.parse(res.value) : [];
+    }catch(e){ return []; }
+  }
+  async function saveCardioLogs(entries){
+    try{ await appStorage.set(CARDIO_KEY, JSON.stringify(entries), false); }
+    catch(e){ console.error('storage error', e); }
+  }
+
+  // Divisão A/B por dia da semana: 0=dom,1=seg,2=ter,3=qua,4=qui,5=sex,6=sáb
+  const DAY_SPLIT = { 1:'A', 2:'B', 3:'A', 4:'B', 5:'A' };
+
+  const EXERCISES = [
+    { id:'ex0', block:'Cardio', name:'Bicicleta ergométrica', target:'1x 15 min', met:3.5,
+      sets:1, repsTarget:900, restSeconds:0, startWeight:0, increment:60, bodyweight:true, isTime:true, countdownMode:true,
+      muscle:'Sistema cardiovascular, quadríceps e posteriores de coxa (esforço leve)',
+      objective:'Aquecimento cardiovascular e ativação geral antes da parte de força',
+      grip:'Sentada, banco ajustado na altura do quadril, joelho com leve flexão no pedal mais baixo (nunca travado)',
+      feel:'Suor leve e respiração mais acelerada, mas ainda conseguindo conversar — ritmo de aquecimento, não de exaustão',
+      commonErrors:'Banco baixo demais sobrecarregando o joelho; acelerar rápido demais sem aquecer gradualmente; tronco caindo pra frente no guidão.',
+      split:'AB',
+      link:'https://www.youtube.com/watch?v=I34TObzEtTY',
+      regions:['front-quad','back-glute'] },
+
+    { id:'ex1', block:'Circuito', name:'Agachamento livre (rack)', target:'4x 8-12', met:5.0,
+      sets:4, repsTarget:10, restSeconds:90, startWeight:20, increment:2, bodyweight:false,
+      muscle:'Quadríceps, glúteos e posteriores de coxa',
+      objective:'Base de força para membros inferiores',
+      grip:'Barra apoiada na parte de trás dos ombros (trapézio), mãos um pouco mais abertas que a largura dos ombros, pegada pronada firme',
+      feel:'Frente da coxa e glúteo ativando na subida. Core contraído o tempo todo pra proteger a lombar',
+      commonErrors:'Joelhos colapsando pra dentro; calcanhar saindo do chão; tronco inclinando demais pra frente.',
+      split:'A',
+      link:'https://www.youtube.com/watch?v=nrM8zB5-gtE',
+      regions:['front-quad','back-glute','back-hamstring'] },
+    { id:'ex2', block:'Circuito', name:'Supino reto com halteres', target:'3x 8-12', met:5.0,
+      sets:3, repsTarget:10, restSeconds:75, startWeight:6, increment:1, bodyweight:false,
+      muscle:'Peitoral, deltoide anterior (frente do ombro) e tríceps',
+      objective:'Força e volume de peitoral',
+      grip:'Pegada pronada (palmas voltadas pros pés), halteres alinhados à linha do peito, punho neutro sem dobrar pra trás',
+      feel:'Meio do peitoral na descida controlada. Leve ativação do tríceps só no fim da subida',
+      commonErrors:'Cotovelos abrindo demais (90°) sobrecarregando o ombro; arquear a lombar tirando do banco; descer rápido demais sem controle.',
+      split:'A',
+      link:'https://www.youtube.com/watch?v=tDxKGeY-hjQ',
+      regions:['front-chest','front-shoulder'] },
+    { id:'ex3', block:'Circuito', name:'Puxada frontal (estação de polia dupla)', target:'3x 10-15', met:4.0,
+      sets:3, repsTarget:12, restSeconds:60, startWeight:25, increment:2.5, bodyweight:false,
+      muscle:'Latíssimo do dorso (as "asas" das costas), bíceps como auxiliar',
+      objective:'Largura e força de costas',
+      grip:'Pegada pronada, mãos um pouco mais abertas que os ombros',
+      feel:'Entre as escápulas e na lateral das costas. Pense em "cotovelos puxando pra baixo", não em puxar com os braços',
+      commonErrors:'Usar o corpo pra dar impulso (balançar); puxar a barra atrás da nuca; não descer os ombros antes de puxar.',
+      split:'A',
+      link:'https://www.youtube.com/watch?v=mPmfwbc_svw',
+      regions:['back-upperback'] },
+    { id:'ex4', block:'Circuito', name:'Desenvolvimento de ombro (aparelho ou halteres)', target:'3x 10-15', met:5.0,
+      sets:3, repsTarget:12, restSeconds:60, startWeight:5, increment:1, bodyweight:false,
+      muscle:'Deltoide (ombro), tríceps como auxiliar',
+      objective:'Força e definição de ombro. Escolha UM dos dois — aparelho OU halteres, não os dois no mesmo dia (seria volume redundante pro mesmo músculo)',
+      grip:'Aparelho: sentada, encosto ajustado, pegada nos punhos do aparelho, empurrar pra cima. Halteres: pegada pronada, halteres na altura dos ombros, cotovelos apontando pra frente/lateral',
+      feel:'Topo e lateral do ombro empurrando o peso pra cima. Se sentir na lombar, é sinal de arqueamento excessivo — reduza a carga',
+      commonErrors:'Arquear a lombar; travar o cotovelo com força no topo; usar impulso das pernas pra ajudar a subir o peso.',
+      split:'A',
+      link:'https://www.youtube.com/watch?v=eufDL9MmF8A',
+      regions:['front-shoulder'] },
+    { id:'ex10', block:'Circuito', name:'Levantamento terra romeno (barra)', target:'3x 8-12', met:6.0,
+      sets:3, repsTarget:10, restSeconds:90, startWeight:20, increment:2, bodyweight:false,
+      muscle:'Posteriores de coxa (isquiotibiais), glúteo e eretores da espinha (lombar como estabilizador)',
+      objective:'Força de cadeia posterior — complementa o agachamento (que é mais quadríceps)',
+      grip:'Pegada pronada na barra, mãos um pouco mais abertas que os ombros, barra sempre próxima ao corpo',
+      feel:'Alongamento na parte de trás da coxa na descida, glúteo contraindo forte na subida. Não deve doer na lombar',
+      commonErrors:'Arredondar as costas; deixar a barra se afastar do corpo; joelhos travados (deve ter leve flexão o tempo todo).',
+      split:'A',
+      link:'https://www.youtube.com/watch?v=jSomWOwLiGE',
+      regions:['back-hamstring','back-glute'] },
+    { id:'ex7', block:'Circuito', name:'Prancha', target:'3x 30-40s', met:3.8,
+      sets:3, repsTarget:35, restSeconds:45, startWeight:0, increment:5, bodyweight:true, isTime:true,
+      muscle:'Core (abdômen e lombar) e estabilizadores de ombro',
+      objective:'Estabilidade central e proteção da coluna',
+      grip:'Antebraços apoiados no chão, cotovelos alinhados sob os ombros',
+      feel:'Abdômen todo contraído, como se fosse levar um soco. Sem deixar o quadril cair ou subir demais',
+      commonErrors:'Quadril caindo (sobrecarrega a lombar); quadril subindo demais (perde ativação do core); prender a respiração em vez de respirar normalmente.',
+      split:'A',
+      link:'https://www.youtube.com/watch?v=fS5zaLjuR5Y',
+      regions:['front-abs','back-lowerback'] },
+
+    { id:'ex6', block:'Circuito', name:'Afundo com halteres', target:'3x 10-15', met:5.0,
+      sets:3, repsTarget:10, restSeconds:60, startWeight:4, increment:1, bodyweight:false,
+      muscle:'Quadríceps, glúteo e posteriores de coxa da perna da frente',
+      objective:'Força unilateral de pernas e equilíbrio',
+      grip:'Halteres ao lado do corpo, pegada neutra, braços relaxados',
+      feel:'Frente da coxa e glúteo da perna da frente na descida. O joelho da frente não deve ultrapassar a ponta do pé',
+      commonErrors:'Joelho da frente ultrapassando a ponta do pé; tronco caindo pra frente; passo curto demais tirando o equilíbrio.',
+      split:'B',
+      link:'https://www.youtube.com/watch?v=LD6dydg2bxc',
+      regions:['front-quad','back-glute'] },
+    { id:'ex5', block:'Circuito', name:'Remada baixa (polia dupla)', target:'3x 10-15', met:4.0,
+      sets:3, repsTarget:12, restSeconds:60, startWeight:25, increment:2.5, bodyweight:false,
+      muscle:'Latíssimo do dorso, romboides (entre as escápulas) e trapézio médio',
+      objective:'Espessura de costas e postura',
+      grip:'Pegada neutra no triângulo (mãos se olhando), cotovelos junto ao corpo',
+      feel:'Squeeze entre as escápulas, como se fosse apertar uma laranja entre elas no fim do movimento',
+      commonErrors:'Puxar só com o braço sem levar o cotovelo pra trás; curvar as costas pra trás pra compensar o peso; ombros subindo até a orelha.',
+      split:'B',
+      link:'https://www.youtube.com/watch?v=2YebbYuuBJQ',
+      regions:['back-upperback'] },
+    { id:'ex11', block:'Circuito', name:'Elevação lateral com halteres', target:'3x 12-15', met:3.0,
+      sets:3, repsTarget:12, restSeconds:45, startWeight:3, increment:0.5, bodyweight:false,
+      muscle:'Deltoide lateral (parte de fora do ombro)',
+      objective:'Largura e definição de ombro',
+      grip:'Halteres ao lado do corpo, pegada neutra, cotovelos com leve flexão fixa, elevar até a altura do ombro',
+      feel:'Lateral do ombro. Se sentir no trapézio (pescoço/ombro subindo), é sinal de peso demais ou impulso',
+      commonErrors:'Subir acima da linha do ombro; usar impulso do tronco pra jogar o peso; encolher os ombros (ativar trapézio em vez de deltoide).',
+      split:'B',
+      link:'https://www.youtube.com/watch?v=c7zMmbWkUPw',
+      regions:['front-shoulder'] },
+    { id:'ex9', block:'Circuito', name:'Cadeira extensora', target:'3x 12-15', met:3.5,
+      sets:3, repsTarget:12, restSeconds:60, startWeight:15, increment:2, bodyweight:false,
+      muscle:'Quadríceps (isolado — vasto lateral, medial, reto femoral)',
+      objective:'Isolamento de quadríceps, complementar ao agachamento e afundo',
+      grip:'Sentada, costas apoiadas no encosto, tornozelos sob o rolo acolchoado, segurando as laterais do banco',
+      feel:'Frente da coxa isolada. O quadril deve ficar parado — se sentir o movimento "alavancando" o corpo, é sinal de peso demais',
+      commonErrors:'Usar impulso/balanço do quadril; deixar os joelhos abrirem ou fecharem demais; descer rápido demais sem controle.',
+      split:'B',
+      link:'https://www.youtube.com/watch?v=y6juG3XuRe4',
+      regions:['front-quad'] },
+    { id:'ex12', block:'Circuito', name:'Rosca direta com halteres', target:'3x 10-15', met:3.0,
+      sets:3, repsTarget:12, restSeconds:45, startWeight:5, increment:1, bodyweight:false,
+      muscle:'Bíceps braquial',
+      objective:'Força e definição de bíceps',
+      grip:'Em pé, halteres ao lado do corpo, palmas voltadas pra frente, cotovelos fixos junto ao corpo',
+      feel:'Frente do braço (bíceps) subindo o peso. Cotovelos não devem se mover pra frente/trás',
+      commonErrors:'Balançar o corpo pra ajudar a subir; mover os cotovelos pra frente; descer rápido demais sem controle.',
+      split:'B',
+      link:'https://www.youtube.com/watch?v=nUSmTWGzOqA',
+      regions:['front-bicep'] },
+    { id:'ex8', block:'Circuito', name:'Elevação de pernas', target:'3x 12-15', met:3.8,
+      sets:3, repsTarget:12, restSeconds:45, startWeight:0, increment:2, bodyweight:true,
+      muscle:'Abdômen inferior e flexores de quadril',
+      objective:'Fortalecimento do core inferior',
+      grip:'Deitada, mãos ao lado do corpo ou embaixo do glúteo pra proteger a lombar',
+      feel:'Abdômen inferior (embaixo do umbigo) controlando a descida. Se sentir na lombar, reduza a amplitude',
+      commonErrors:'Usar impulso/balanço em vez de controle; arquear a lombar tirando do chão; descer rápido demais sem controle.',
+      split:'B',
+      link:'https://www.youtube.com/watch?v=IIMzCZXqIeA',
+      regions:['front-abs'] },
+    { id:'ex13', block:'Circuito', name:'Tríceps na polia (corda)', target:'3x 12-15', met:3.0,
+      sets:3, repsTarget:12, restSeconds:45, startWeight:15, increment:2, bodyweight:false,
+      muscle:'Tríceps (as 3 cabeças, especialmente lateral e longa)',
+      objective:'Força e definição de tríceps',
+      grip:'Polia alta com corda, cotovelos fixos ao lado do corpo, empurrar pra baixo e abrir as mãos no final',
+      feel:'Parte de trás do braço (tríceps) na extensão. Cotovelos não devem se abrir pros lados',
+      commonErrors:'Abrir os cotovelos durante o movimento; balançar o tronco (gangorra); não completar a extensão total do cotovelo.',
+      split:'B',
+      link:'https://www.youtube.com/watch?v=Em5sYz2x-KQ',
+      regions:['back-tricep'] },
+  ];
+
+  const WARMUP_INFO = {
+    w1: { label:'Mobilidade de quadril + tornozelo',
+          explain:'Rotações de quadril, agachamento profundo com pausa e passada com rotação de tronco. Libera a articulação do quadril e do tornozelo pra você descer com boa amplitude no agachamento e no afundo.',
+          link:'https://www.youtube.com/watch?v=E4pLZ6VH0q4',
+          regions:['front-quad','back-glute'] },
+    w2: { label:'Ativação de glúteo/core',
+          explain:'Ponte de glúteo (elevação de quadril deitada). Acorda o glúteo antes da carga pesada, pra ele trabalhar de verdade no agachamento em vez da lombar compensar.',
+          link:'https://www.youtube.com/watch?v=6jS6aH-78w4',
+          regions:['back-glute','front-abs'] },
+    w3: { label:'Mobilidade de ombro/coluna torácica',
+          explain:'Rotações de ombro e mobilidade da coluna torácica (tipo "gato-camelo"). Libera pra levantar os braços acima da cabeça sem compensar com a lombar — importante pro desenvolvimento de ombro.',
+          link:'https://www.youtube.com/shorts/mnztadUQ4RU',
+          regions:['front-shoulder','back-upperback'] },
+  };
+
+  function muscleSVG(regions){
+    regions = regions || [];
+    const isActive = (id) => regions.includes(id) ? ' active' : '';
+    return `<svg class="muscle-svg" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg">
+      <text x="40" y="98" text-anchor="middle">FRENTE</text>
+      <circle class="body-part" cx="40" cy="10" r="7"/>
+      <rect class="body-part" x="37" y="16" width="6" height="4"/>
+      <rect class="body-part" x="27" y="20" width="26" height="32" rx="8"/>
+      <rect class="body-part" x="16" y="24" width="6" height="26" rx="3"/>
+      <rect class="body-part" x="58" y="24" width="6" height="26" rx="3"/>
+      <rect class="body-part" x="29" y="54" width="9" height="30" rx="3"/>
+      <rect class="body-part" x="42" y="54" width="9" height="30" rx="3"/>
+      <ellipse class="region${isActive('front-chest')}" cx="40" cy="28" rx="10" ry="6"/>
+      <circle class="region${isActive('front-shoulder')}" cx="24" cy="23" r="5"/>
+      <circle class="region${isActive('front-shoulder')}" cx="56" cy="23" r="5"/>
+      <rect class="region${isActive('front-abs')}" x="32" y="36" width="16" height="14" rx="3"/>
+      <ellipse class="region${isActive('front-quad')}" cx="33.5" cy="62" rx="5" ry="9"/>
+      <ellipse class="region${isActive('front-quad')}" cx="46.5" cy="62" rx="5" ry="9"/>
+      <ellipse class="region${isActive('front-bicep')}" cx="19" cy="32" rx="4" ry="8"/>
+      <ellipse class="region${isActive('front-bicep')}" cx="61" cy="32" rx="4" ry="8"/>
+      <text x="140" y="98" text-anchor="middle">COSTAS</text>
+      <circle class="body-part" cx="140" cy="10" r="7"/>
+      <rect class="body-part" x="137" y="16" width="6" height="4"/>
+      <rect class="body-part" x="127" y="20" width="26" height="32" rx="8"/>
+      <rect class="body-part" x="116" y="24" width="6" height="26" rx="3"/>
+      <rect class="body-part" x="158" y="24" width="6" height="26" rx="3"/>
+      <rect class="body-part" x="129" y="54" width="9" height="30" rx="3"/>
+      <rect class="body-part" x="142" y="54" width="9" height="30" rx="3"/>
+      <ellipse class="region${isActive('back-upperback')}" cx="140" cy="27" rx="11" ry="7"/>
+      <rect class="region${isActive('back-lowerback')}" x="132" y="36" width="16" height="10" rx="3"/>
+      <ellipse class="region${isActive('back-glute')}" cx="140" cy="56" rx="13" ry="6"/>
+      <ellipse class="region${isActive('back-hamstring')}" cx="133.5" cy="68" rx="5" ry="9"/>
+      <ellipse class="region${isActive('back-hamstring')}" cx="146.5" cy="68" rx="5" ry="9"/>
+      <ellipse class="region${isActive('back-tricep')}" cx="119" cy="32" rx="4" ry="8"/>
+      <ellipse class="region${isActive('back-tricep')}" cx="161" cy="32" rx="4" ry="8"/>
+    </svg>`;
+  }
+
+  async function loadHistory(){
+    try{
+      const res = await appStorage.get(HISTORY_KEY, false);
+      return res && res.value ? JSON.parse(res.value) : {};
+    }catch(e){ return {}; }
+  }
+  async function saveHistory(hist){
+    try{ await appStorage.set(HISTORY_KEY, JSON.stringify(hist), false); }
+    catch(e){ console.error('storage error', e); }
+  }
+
+  async function loadLogs(){
+    try{
+      const res = await appStorage.get(STORAGE_KEY, false);
+      return res && res.value ? JSON.parse(res.value) : [];
+    }catch(e){ return []; }
+  }
+  async function saveLogs(logs){
+    try{ await appStorage.set(STORAGE_KEY, JSON.stringify(logs), false); }
+    catch(e){ console.error('storage error', e); }
+  }
+
+  async function loadBodyWeights(){
+    try{
+      const res = await appStorage.get(BODYWEIGHT_KEY, false);
+      return res && res.value ? JSON.parse(res.value) : [];
+    }catch(e){ return []; }
+  }
+  async function saveBodyWeights(entries){
+    try{ await appStorage.set(BODYWEIGHT_KEY, JSON.stringify(entries), false); }
+    catch(e){ console.error('storage error', e); }
+  }
+
+  // ---------- cálculo de calorias (método MET — Compendium of Physical Activities, Ainsworth et al.) ----------
+  // Fórmula padrão: kcal = MET × peso corporal (kg) × duração (horas)
+  let cachedBodyWeightKg = null;
+  async function getCurrentBodyWeightKg(){
+    if(cachedBodyWeightKg !== null) return cachedBodyWeightKg;
+    try{
+      const entries = await loadBodyWeights();
+      cachedBodyWeightKg = (entries && entries.length) ? entries[0].weight : null;
+    }catch(e){ cachedBodyWeightKg = null; }
+    return cachedBodyWeightKg;
+  }
+  function invalidateBodyWeightCache(){ cachedBodyWeightKg = null; }
+
+  function kcalFromMet(met, weightKg, minutes){
+    if(!met || !weightKg || !minutes) return 0;
+    return met * weightKg * (minutes/60);
+  }
+
+  // MET por velocidade (interpolação linear entre pontos do Compendium) — usado no cardio livre
+  // quando há distância + duração suficientes pra calcular km/h.
+  const MET_SPEED_TABLES = {
+    corrida: [ // km/h -> MET (corrida/trote)
+      [6.4,6.0],[8.0,8.3],[9.7,9.8],[10.8,10.5],[11.3,11.0],[12.1,11.5],[12.9,11.8],[14.5,12.8],[16.1,14.5],[17.7,16.0]
+    ],
+    caminhada: [ // km/h -> MET (caminhada)
+      [3.2,2.8],[4.0,3.0],[4.8,3.3],[5.6,3.8],[6.4,5.0],[7.2,6.3],[8.0,8.0]
+    ],
+    bicicleta: [ // km/h -> MET (ciclismo ao ar livre)
+      [16,4.0],[19,6.8],[22.5,8.0],[25.7,10.0],[30.6,12.0],[32.2,15.8]
+    ]
+  };
+  // MET fixo pra atividades sem relação direta e confiável com velocidade
+  const MET_FIXED = {
+    eliptico: 5.0,
+    natacao: 6.0,
+    outro: 5.0
+  };
+  function interpolateMet(table, speed){
+    if(speed <= table[0][0]) return table[0][1];
+    if(speed >= table[table.length-1][0]) return table[table.length-1][1];
+    for(let i=0;i<table.length-1;i++){
+      const [s1,m1] = table[i], [s2,m2] = table[i+1];
+      if(speed >= s1 && speed <= s2){
+        const frac = (speed - s1) / (s2 - s1);
+        return m1 + frac * (m2 - m1);
+      }
+    }
+    return table[table.length-1][1];
+  }
+  function metForCardio(type, distanceKm, durationMin){
+    const table = MET_SPEED_TABLES[type];
+    if(table && distanceKm > 0 && durationMin > 0){
+      const speedKmh = distanceKm / (durationMin/60);
+      return { met: interpolateMet(table, speedKmh), estimated:false, speedKmh };
+    }
+    if(table){
+      // sem distância — usa um ritmo moderado típico como estimativa
+      const fallbackMet = type === 'corrida' ? 9.8 : (type === 'caminhada' ? 3.8 : 6.8);
+      return { met: fallbackMet, estimated:true, speedKmh:null };
+    }
+    return { met: MET_FIXED[type] || MET_FIXED.outro, estimated:true, speedKmh:null };
+  }
+
+  const DIAS_PT = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+  function todayInfo(){
+    const d = new Date();
+    return { dow: d.getDay(), label: `${DIAS_PT[d.getDay()]}, ${d.toLocaleDateString('pt-BR')}`, iso: d.toISOString().slice(0,10) };
+  }
+
+  let selectedDiff = null;
+
+  // ---------- estado da sessão guiada (séries + descanso) ----------
+  const sessionState = {}; // { exId: {...} }
+  const completedExercises = []; // ids concluídos nesta sessão, em ordem
+  const SESSION_SNAPSHOT_KEY = 'gym-session-snapshot';
+
+  async function saveSessionSnapshot(){
+    try{
+      const t = todayInfo();
+      const exercises = {};
+      Object.keys(sessionState).forEach(exId=>{
+        const st = sessionState[exId];
+        exercises[exId] = { currentSet: st.currentSet, log: st.log, targetUsed: st.targetUsed };
+      });
+      const snapshot = { date: t.iso, completedExercises: completedExercises.slice(), exercises };
+      await appStorage.set(SESSION_SNAPSHOT_KEY, JSON.stringify(snapshot), false);
+    }catch(e){ /* se falhar, segue sem persistir — não trava o treino */ }
+  }
+
+  async function loadSessionSnapshot(){
+    try{
+      const res = await appStorage.get(SESSION_SNAPSHOT_KEY, false);
+      if(!res || !res.value) return null;
+      const snapshot = JSON.parse(res.value);
+      const t = todayInfo();
+      if(snapshot.date !== t.iso) return null; // snapshot de outro dia, ignora
+      return snapshot;
+    }catch(e){ return null; }
+  }
+
+  // ---------- áudio (beeps via Web Audio API) ----------
+  let audioCtx = null;
+  function getAudioCtx(){
+    if(!audioCtx){
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if(Ctx) audioCtx = new Ctx();
+    }
+    return audioCtx;
+  }
+  function beep(freq, durationMs, type){
+    try{
+      const ctx = getAudioCtx();
+      if(!ctx) return;
+      if(ctx.state === 'suspended') ctx.resume();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.35, ctx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + durationMs/1000);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + durationMs/1000 + 0.02);
+    }catch(e){ /* áudio indisponível neste dispositivo */ }
+  }
+  function playCountBeep(){ beep(660, 150, 'sine'); }
+  function playGoBeep(){ beep(880, 350, 'triangle'); }
+  function playRestEndSound(){ beep(520,180,'sine'); setTimeout(()=>beep(780,220,'sine'), 190); }
+  function playSetEndSound(){ beep(440,120,'sine'); }
+
+  // ---------- modal de confirmação (pular série) ----------
+  function extractYouTubeId(url){
+    if(!url) return null;
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/
+    ];
+    for(const p of patterns){
+      const m = url.match(p);
+      if(m) return m[1];
+    }
+    return null;
+  }
+
+  function extractYouTubePlaylistId(url){
+    if(!url) return null;
+    const m = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+    return m ? m[1] : null;
+  }
+
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.video-link-btn');
+    if(btn){
+      const url = btn.getAttribute('data-video-url');
+      if(url) window.open(url, '_blank', 'noopener');
+      else alert('Nenhum vídeo cadastrado pra esse exercício ainda.');
+    }
+    const saveBtn = e.target.closest('[data-save-video]');
+    if(saveBtn){
+      const exId = saveBtn.getAttribute('data-save-video');
+      const input = document.querySelector(`[data-video-override="${exId}"]`);
+      const url = input.value.trim();
+      if(!url){ alert('Cola o link do vídeo antes de salvar.'); return; }
+      saveVideoOverride(exId, url).then(()=>{
+        const btnEl = input.closest('.ex-details-body').querySelector('.video-link-btn');
+        if(btnEl) btnEl.setAttribute('data-video-url', url);
+        alert('Link salvo. Vai usar esse vídeo a partir de agora.');
+      });
+    }
+  });
+
+  function showConfirmModal(message, onConfirm){
+    const root = document.getElementById('modalRoot');
+    root.innerHTML = `
+      <div class="modal-overlay">
+        <div class="modal-box">
+          <p>${message}</p>
+          <div class="modal-actions">
+            <button class="btn ghost" id="modalCancel">Cancelar</button>
+            <button class="btn primary" id="modalConfirm">Sim, pular</button>
+          </div>
+        </div>
+      </div>`;
+    document.getElementById('modalCancel').addEventListener('click', ()=>{ root.innerHTML=''; });
+    document.getElementById('modalConfirm').addEventListener('click', ()=>{ root.innerHTML=''; onConfirm(); });
+  }
+
+  function computeSuggestion(ex, hist){
+    const entries = hist[ex.id] || [];
+    if(entries.length === 0){
+      return { value: ex.bodyweight ? ex.repsTarget : ex.startWeight, badge:'new',
+        note: ex.bodyweight ? 'Meta inicial pra testar — ajuste na 1ª série se sentir muito fácil ou difícil.'
+                             : 'Carga inicial sugerida — ajuste na 1ª série se sentir muito leve ou pesada.' };
+    }
+    const last = entries[0];
+    const targetForLast = ex.bodyweight ? last.weight : ex.repsTarget;
+    const metThis = last.minReps != null && last.minReps >= targetForLast;
+    if(metThis){
+      return { value: last.weight + ex.increment, badge:'up',
+        note: ex.bodyweight ? (ex.isTime ? 'Bateu o tempo em todas as séries — hora de aumentar.' : 'Bateu as reps em todas as séries — hora de aumentar.')
+                             : 'Bateu a meta em todas as séries — hora de subir.' };
+    }
+    return { value: last.weight, badge:'hold',
+      note: 'Mantendo até fechar a meta de repetições em todas as séries.' };
+  }
+
+  function fmtRest(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = (s%60).toString().padStart(2,'0');
+    return `${m}:${sec}`;
+  }
+
+  function tempoFlagFor(ex, reps, durationSec){
+    if(ex.isTime || !reps || reps <= 0) return null;
+    const expectedMin = reps * 1.5;
+    const expectedMax = reps * 6;
+    if(durationSec < expectedMin) return 'fast';
+    if(durationSec > expectedMax) return 'slow';
+    return null;
+  }
+
+    function todayExerciseCount(){
+    const t = todayInfo();
+    const todaySplit = DAY_SPLIT[t.dow] || null;
+    return todaySplit ? EXERCISES.filter(ex => ex.split.includes(todaySplit)).length : EXERCISES.length;
+  }
+
+function renderExerciseCard(ex, hist){
+    if(!sessionState[ex.id]) sessionState[ex.id] = {
+      currentSet:1, log:[], resting:false, restEndTs:0, restInterval:null,
+      setStarted:false, setStartTime:Date.now(), busy:false,
+      plankPhase:'idle', plankInterval:null, plankStartTs:0, plankCount:4,
+      transitioning:false, transitionEndTs:0, transitionInterval:null,
+      targetUsed:null
+    };
+    const st = sessionState[ex.id];
+    const suggestion = computeSuggestion(ex, hist);
+
+    const badgeClass = suggestion.badge === 'up' ? 'up' : (suggestion.badge === 'new' ? 'new' : 'hold');
+    const badgeIcon = suggestion.badge === 'up' ? '🔼' : (suggestion.badge === 'new' ? '🆕' : '➡️');
+    const unit = ex.bodyweight ? (ex.isTime ? 's' : ' reps') : 'kg';
+    const badgeText = suggestion.badge === 'up'
+      ? `Sugestão: subir para ${suggestion.value}${unit}`
+      : (suggestion.badge === 'new' ? `Sugestão inicial: ${suggestion.value}${unit}` : `Manter: ${suggestion.value}${unit}`);
+
+    let dotsHTML = '';
+    for(let i=1; i<=ex.sets; i++){
+      let cls = 'set-dot';
+      if(i <= st.log.length) cls += ' done';
+      else if(i === st.currentSet) cls += ' current';
+      dotsHTML += `<div class="${cls}">${i <= st.log.length ? '✓' : i}</div>`;
+    }
+
+    let bodyHTML = '';
+    if(st.transitioning){
+      const remaining = Math.max(0, Math.ceil((st.transitionEndTs - Date.now())/1000));
+      bodyHTML = `<div class="rest-box transition-box">
+        <div><div class="rest-label">Preparando próximo aparelho</div><div class="rest-time" data-transition-display="${ex.id}">${fmtRest(remaining)}</div></div>
+        <button class="btn ghost" data-skip-transition="${ex.id}">Pular</button>
+      </div>`;
+    } else if(st.resting){
+      const remaining = Math.max(0, Math.ceil((st.restEndTs - Date.now())/1000));
+      bodyHTML = `<div class="rest-box">
+        <div><div class="rest-label">Descanso — próxima série em</div><div class="rest-time" data-rest-display="${ex.id}">${fmtRest(remaining)}</div></div>
+        <button class="btn ghost" data-skip-rest="${ex.id}">Pular</button>
+      </div>`;
+    } else if(ex.isTime){
+      if(st.plankPhase === 'countdown'){
+        bodyHTML = `<div class="plank-timer">
+          <span class="phase-label">Prepare-se</span>
+          <span class="big-num" data-plank-display="${ex.id}">${st.plankCount}</span>
+        </div>`;
+      } else if(st.plankPhase === 'running'){
+        const elapsed = Math.floor((Date.now() - st.plankStartTs)/1000);
+        const label = ex.countdownMode ? 'Tempo restante' : 'Segurando';
+        const displayVal = ex.countdownMode ? fmtRest(Math.max(0, ex.repsTarget - elapsed)) : `${elapsed}s`;
+        bodyHTML = `<div class="plank-timer">
+          <span class="phase-label">${label}</span>
+          <span class="big-num" data-plank-display="${ex.id}">${displayVal}</span>
+          <button class="btn primary full" data-plank-stop="${ex.id}">⏹ Concluir série</button>
+        </div>`;
+      } else {
+        bodyHTML = `<div class="plank-timer">
+          <button class="btn primary full" data-plank-start="${ex.id}">▶ Iniciar (série ${st.currentSet})</button>
+        </div>
+        <button class="skip-set-btn" data-skip-set="${ex.id}">pular esta série</button>`;
+      }
+    } else if(!st.setStarted){
+      bodyHTML = `<div class="set-form">
+        <button class="btn primary full" data-start-set="${ex.id}">▶ Iniciar série ${st.currentSet}</button>
+      </div>
+      <button class="skip-set-btn" data-skip-set="${ex.id}">pular esta série</button>`;
+    } else if(ex.bodyweight){
+      bodyHTML = `<div class="set-form">
+        <div class="field"><label>Repetições</label><input type="number" step="1" min="0" inputmode="numeric" data-set-reps="${ex.id}" value="${suggestion.value}"></div>
+        <button class="btn primary" data-complete-set="${ex.id}">Concluir série ${st.currentSet}</button>
+      </div>
+      <button class="skip-set-btn" data-skip-set="${ex.id}">pular esta série</button>`;
+    } else {
+      bodyHTML = `<div class="set-form">
+        <div class="field"><label>Peso (kg)</label><input type="number" step="0.5" min="0" inputmode="decimal" data-set-weight="${ex.id}" value="${suggestion.value}"></div>
+        <div class="field"><label>Reps feitas</label><input type="number" step="1" min="0" inputmode="numeric" data-set-reps="${ex.id}" value="${ex.repsTarget}"></div>
+        <button class="btn primary" data-complete-set="${ex.id}">Concluir série ${st.currentSet}</button>
+      </div>
+      <button class="skip-set-btn" data-skip-set="${ex.id}">pular esta série</button>`;
+    }
+
+    const activeVideoUrl = videoOverrides[ex.id] || ex.link;
+
+    return `
+      <div class="ex-name-row">
+        <div class="ex-thumb">${muscleSVG(ex.regions)}</div>
+        <div class="ex-name"><span>${ex.name}</span><span class="ex-target">${ex.target}</span></div>
+      </div>
+      <details class="ex-details">
+        <summary>Como fazer, músculo, onde sentir</summary>
+        <div class="ex-details-body">
+          <p><strong>Músculo:</strong> ${ex.muscle}</p>
+          ${muscleSVG(ex.regions)}
+          <p><strong>Objetivo:</strong> ${ex.objective}</p>
+          <p><strong>Pegada:</strong> ${ex.grip}</p>
+          <p><strong>Onde sentir:</strong> ${ex.feel}</p>
+          <p><strong>Erros comuns:</strong> ${ex.commonErrors}</p>
+          <button class="ex-link video-link-btn" data-video-url="${activeVideoUrl}">▶ Ver exemplo em vídeo</button>
+          <div class="video-override-row">
+            <input type="text" class="video-override-input" data-video-override="${ex.id}" placeholder="Vídeo de demonstração de ${ex.name} (não é a playlist de música)" value="${videoOverrides[ex.id] || ''}">
+            <button class="btn ghost" data-save-video="${ex.id}">Salvar</button>
+          </div>
+        </div>
+      </details>
+      <span class="suggestion-badge ${badgeClass}">${badgeIcon} ${badgeText}</span>
+      <p class="skip-note" style="margin:2px 0 4px;">${suggestion.note}</p>
+      <div class="set-dots">${dotsHTML}</div>
+      ${bodyHTML}
+    `;
+  }
+
+  function finishSet(exId, ex, entry){
+    const st = sessionState[exId];
+    st.log.push(entry);
+    st.busy = false;
+    st.setStarted = false;
+
+    const saveBtn = document.getElementById('saveLogBtn');
+    if(saveBtn && saveBtn.disabled){ saveBtn.disabled = false; saveBtn.textContent = 'Fechar sessão'; }
+
+    if(st.log.length >= ex.sets){
+      st.transitioning = true;
+      st.transitionEndTs = Date.now() + 30000;
+      saveSessionSnapshot();
+      renderOneExercise(exId, ex);
+      st.transitionInterval = setInterval(()=>{
+        const remaining = Math.ceil((st.transitionEndTs - Date.now())/1000);
+        const disp = document.querySelector(`[data-transition-display="${exId}"]`);
+        if(remaining <= 0){
+          clearInterval(st.transitionInterval);
+          st.transitioning = false;
+          completeExercise(exId, ex);
+        } else if(disp){
+          disp.textContent = fmtRest(remaining);
+        }
+      }, 1000);
+    } else {
+      st.currentSet++;
+      st.resting = true;
+      st.restEndTs = Date.now() + ex.restSeconds*1000;
+      st.plankPhase = 'idle';
+      saveSessionSnapshot();
+      renderOneExercise(exId, ex);
+      st.restInterval = setInterval(()=>{
+        const remaining = Math.ceil((st.restEndTs - Date.now())/1000);
+        const disp = document.querySelector(`[data-rest-display="${exId}"]`);
+        if(remaining <= 0){
+          clearInterval(st.restInterval);
+          st.resting = false;
+          playRestEndSound();
+          if(navigator.vibrate) navigator.vibrate(200);
+          renderOneExercise(exId, ex);
+        } else if(disp){
+          disp.textContent = fmtRest(remaining);
+        }
+      }, 1000);
+    }
+  }
+
+  async function completeExercise(exId, ex){
+    const st = sessionState[exId];
+    const validSets = st.log.filter(l=>!l.skipped);
+    if(validSets.length > 0){
+      const hist = await loadHistory();
+      const attempted = computeSuggestion(ex, hist);
+      st.targetUsed = ex.bodyweight ? attempted.value : ex.repsTarget;
+      if(!hist[exId]) hist[exId] = [];
+      const minReps = Math.min(...validSets.map(l=>l.reps));
+      const weightUsed = ex.bodyweight ? attempted.value : validSets[validSets.length-1].weight;
+      hist[exId].unshift({ date: todayInfo().iso, weight: weightUsed, minReps: minReps, sets: validSets.length });
+      await saveHistory(hist);
+      historyCache = hist;
+    } else {
+      st.targetUsed = ex.bodyweight ? null : ex.repsTarget;
+    }
+
+    const row = document.querySelector(`.ex-input-row[data-ex-id="${exId}"]`);
+    const parentGroup = row ? row.parentElement : null;
+    if(row) row.remove();
+    if(parentGroup && parentGroup.querySelectorAll('.ex-input-row').length === 0) parentGroup.remove();
+
+    if(!completedExercises.includes(exId)) completedExercises.push(exId);
+    saveSessionSnapshot();
+    renderCompletedCard();
+    renderDash();
+  }
+
+  function praiseFor(ex, log, target){
+    const validSets = log.filter(l=>!l.skipped);
+    if(validSets.length === 0 || target == null) return null;
+    const allHitTarget = validSets.every(l=>l.reps >= target);
+    const noBadTempo = validSets.every(l=>!l.tempoFlag);
+    if(allHitTarget && noBadTempo && validSets.length === ex.sets){
+      const options = ['Mandou muito bem nesse aqui! 💪','Execução sólida do início ao fim.','Isso foi consistência de verdade.','Todas as séries no alvo — ótimo trabalho.'];
+      return options[Math.floor(Math.random()*options.length)];
+    }
+    return null;
+  }
+
+  async function renderCompletedCard(){
+    const card = document.getElementById('completedCard');
+    const list = document.getElementById('completedList');
+    const statsBox = document.getElementById('sessionStats');
+    if(completedExercises.length === 0){ card.style.display = 'none'; return; }
+    card.style.display = 'block';
+
+    const weightKg = await getCurrentBodyWeightKg();
+
+    let totalWeight = 0, totalTime = 0, totalKcal = 0;
+    list.innerHTML = completedExercises.map(exId=>{
+      const ex = EXERCISES.find(e=>e.id===exId);
+      const st = sessionState[exId];
+      const validSets = st.log.filter(l=>!l.skipped);
+      let exTime = 0;
+      validSets.forEach(l=>{ totalWeight += (l.weight||0) * (l.reps||0); exTime += (l.durationSec||0); });
+      totalTime += exTime;
+      const exKcal = weightKg ? kcalFromMet(ex.met, weightKg, exTime/60) : 0;
+      totalKcal += exKcal;
+
+      const setsHTML = st.log.map((l,i)=>{
+        if(l.skipped) return `<div class="set-log-row"><span>Série ${i+1}</span><span>pulada</span></div>`;
+        const txt = ex.bodyweight ? (ex.isTime ? `${l.reps}s` : `${l.reps} reps`) : `${l.weight}kg × ${l.reps} reps`;
+        const flag = l.tempoFlag === 'fast' ? '<span class="tempo-flag fast">rápida demais</span>' : (l.tempoFlag === 'slow' ? '<span class="tempo-flag slow">lenta demais</span>' : '');
+        return `<div class="set-log-row"><span>Série ${i+1}</span><span>${txt}${flag}</span></div>`;
+      }).join('');
+
+      const praise = praiseFor(ex, st.log, st.targetUsed);
+      const kcalTxt = weightKg && exKcal > 0 ? `<div class="skip-note" style="margin-top:4px;">≈ ${Math.round(exKcal)} kcal (MET ${ex.met})</div>` : '';
+
+      return `<div class="log-entry">
+        <div class="top-row"><span class="day">${ex.name}</span></div>
+        ${setsHTML}
+        ${kcalTxt}
+        ${praise ? `<div class="praise-line">${praise}</div>` : ''}
+      </div>`;
+    }).join('');
+
+    statsBox.innerHTML = `
+      <div class="stat"><span class="num">${completedExercises.length}/${todayExerciseCount()}</span><span class="lbl">exercícios</span></div>
+      <div class="stat"><span class="num">${Math.round(totalWeight)}</span><span class="lbl">kg totais</span></div>
+      <div class="stat"><span class="num">${Math.round(totalTime/60)}</span><span class="lbl">min ativos</span></div>
+      <div class="stat"><span class="num">${weightKg ? Math.round(totalKcal) : '—'}</span><span class="lbl">kcal (treino)</span></div>
+    `;
+    if(!weightKg){
+      statsBox.insertAdjacentHTML('afterend', '<p class="skip-note" id="kcalMissingNote" style="margin-top:-6px; margin-bottom:14px;">Registre seu peso corporal no Painel semanal pra ver o gasto calórico do treino.</p>');
+    } else {
+      const oldNote = document.getElementById('kcalMissingNote');
+      if(oldNote) oldNote.remove();
+    }
+  }
+
+  function wireExerciseCard(exId, ex){
+    const scope = document.querySelector(`.ex-input-row[data-ex-id="${exId}"]`);
+    if(!scope) return;
+    const st = sessionState[exId];
+
+    const startSetBtn = scope.querySelector(`[data-start-set="${exId}"]`);
+    if(startSetBtn){
+      startSetBtn.addEventListener('click', ()=>{
+        if(st.busy) return;
+        st.setStarted = true;
+        st.setStartTime = Date.now();
+        renderOneExercise(exId, ex);
+      });
+    }
+
+    const completeBtn = scope.querySelector(`[data-complete-set="${exId}"]`);
+    if(completeBtn){
+      completeBtn.addEventListener('click', async ()=>{
+        if(st.busy) return;
+        const repsInput = scope.querySelector(`[data-set-reps="${exId}"]`);
+        const weightInput = scope.querySelector(`[data-set-weight="${exId}"]`);
+        const reps = parseFloat(repsInput.value);
+        const weight = ex.bodyweight ? 0 : parseFloat(weightInput.value);
+        if(isNaN(reps) || (!ex.bodyweight && isNaN(weight))){
+          alert('Preenche os campos da série antes de concluir.');
+          return;
+        }
+        st.busy = true;
+        completeBtn.disabled = true;
+        const durationSec = Math.round((Date.now() - st.setStartTime)/1000);
+        const tempoFlag = tempoFlagFor(ex, reps, durationSec);
+        playSetEndSound();
+        finishSet(exId, ex, { weight, reps, durationSec, tempoFlag, skipped:false });
+      });
+    }
+
+    const skipSetBtn = scope.querySelector(`[data-skip-set="${exId}"]`);
+    if(skipSetBtn){
+      skipSetBtn.addEventListener('click', ()=>{
+        if(st.busy) return;
+        showConfirmModal('Você não quer mesmo ser uma tremenda gostosa?', ()=>{
+          st.busy = true;
+          finishSet(exId, ex, { weight:0, reps:0, durationSec:0, tempoFlag:null, skipped:true });
+        });
+      });
+    }
+
+    const skipRestBtn = scope.querySelector(`[data-skip-rest="${exId}"]`);
+    if(skipRestBtn){
+      skipRestBtn.addEventListener('click', ()=>{
+        clearInterval(st.restInterval);
+        st.resting = false;
+        renderOneExercise(exId, ex);
+      });
+    }
+
+    const skipTransitionBtn = scope.querySelector(`[data-skip-transition="${exId}"]`);
+    if(skipTransitionBtn){
+      skipTransitionBtn.addEventListener('click', ()=>{
+        clearInterval(st.transitionInterval);
+        st.transitioning = false;
+        completeExercise(exId, ex);
+      });
+    }
+
+    const plankStartBtn = scope.querySelector(`[data-plank-start="${exId}"]`);
+    if(plankStartBtn){
+      plankStartBtn.addEventListener('click', ()=>{
+        if(st.busy) return;
+        st.busy = true;
+        st.plankPhase = 'countdown';
+        st.plankCount = 4;
+        renderOneExercise(exId, ex);
+        playCountBeep();
+        const countInterval = setInterval(()=>{
+          st.plankCount--;
+          const disp = document.querySelector(`[data-plank-display="${exId}"]`);
+          if(st.plankCount > 0){
+            if(disp) disp.textContent = st.plankCount;
+            playCountBeep();
+          } else {
+            clearInterval(countInterval);
+            playGoBeep();
+            if(navigator.vibrate) navigator.vibrate(150);
+            st.plankPhase = 'running';
+            st.plankStartTs = Date.now();
+            renderOneExercise(exId, ex);
+            st.plankInterval = setInterval(()=>{
+              const elapsed = Math.floor((Date.now() - st.plankStartTs)/1000);
+              const d2 = document.querySelector(`[data-plank-display="${exId}"]`);
+              if(ex.countdownMode){
+                const remaining = ex.repsTarget - elapsed;
+                if(remaining <= 0){
+                  clearInterval(st.plankInterval);
+                  playSetEndSound();
+                  if(navigator.vibrate) navigator.vibrate(200);
+                  st.plankPhase = 'idle';
+                  st.busy = false;
+                  finishSet(exId, ex, { weight:0, reps: ex.repsTarget, durationSec: ex.repsTarget, tempoFlag:null, skipped:false });
+                  return;
+                }
+                if(d2) d2.textContent = fmtRest(remaining);
+              } else {
+                if(d2) d2.textContent = elapsed + 's';
+              }
+            }, 1000);
+          }
+        }, 700);
+      });
+    }
+    const plankStopBtn = scope.querySelector(`[data-plank-stop="${exId}"]`);
+    if(plankStopBtn){
+      plankStopBtn.addEventListener('click', ()=>{
+        clearInterval(st.plankInterval);
+        playSetEndSound();
+        if(navigator.vibrate) navigator.vibrate(200);
+        const elapsed = Math.floor((Date.now() - st.plankStartTs)/1000);
+        const reps = ex.countdownMode ? Math.min(elapsed, ex.repsTarget) : elapsed;
+        st.plankPhase = 'idle';
+        st.busy = false;
+        finishSet(exId, ex, { weight:0, reps, durationSec:reps, tempoFlag:null, skipped:false });
+      });
+    }
+  }
+
+  let historyCache = {};
+
+  async function renderOneExercise(exId, ex){
+    const scope = document.querySelector(`.ex-input-row[data-ex-id="${exId}"]`);
+    if(!scope) return;
+    scope.innerHTML = renderExerciseCard(ex, historyCache);
+    wireExerciseCard(exId, ex);
+  }
+
+  async function renderSession(){
+    const t = todayInfo();
+    document.getElementById('todayLabel').textContent = t.label.charAt(0).toUpperCase() + t.label.slice(1);
+
+    const SPLIT_OVERRIDE_KEY = 'gym-split-override';
+    let overrideData = null;
+    try{
+      const res = await appStorage.get(SPLIT_OVERRIDE_KEY);
+      if(res && res.value){
+        const parsed = JSON.parse(res.value);
+        if(parsed.date === t.iso) overrideData = parsed.split;
+      }
+    }catch(e){ /* sem override salvo */ }
+
+    const autoSplit = DAY_SPLIT[t.dow] || null;
+    const todaySplit = overrideData || autoSplit;
+
+    const splitLabelEl = document.getElementById('splitLabel');
+    if(splitLabelEl){
+      const suffix = overrideData ? ' (forçado manualmente)' : '';
+      if(todaySplit === 'A') splitLabelEl.textContent = 'Treino A — Pernas + Empurrar' + suffix;
+      else if(todaySplit === 'B') splitLabelEl.textContent = 'Treino B — Puxar + Core' + suffix;
+      else splitLabelEl.textContent = 'Sem treino fixo hoje';
+    }
+
+    document.getElementById('forceABtn').classList.toggle('active-split', todaySplit === 'A');
+    document.getElementById('forceBBtn').classList.toggle('active-split', todaySplit === 'B');
+    document.getElementById('forceAutoBtn').style.display = overrideData ? 'inline-block' : 'none';
+
+    Object.entries(WARMUP_INFO).forEach(([id, info])=>{
+      const explainEl = document.getElementById(id + '-explain');
+      const linkEl = document.getElementById(id + '-link');
+      const svgEl = document.getElementById(id + '-svg');
+      if(explainEl) explainEl.textContent = info.explain;
+      if(linkEl) linkEl.setAttribute('data-video-url', info.link);
+      if(svgEl) svgEl.innerHTML = muscleSVG(info.regions);
+    });
+
+    const hist = await loadHistory();
+    videoOverrides = await loadVideoOverrides();
+    const container = document.getElementById('exerciseBlocks');
+    container.innerHTML = '';
+
+    // restaura progresso salvo (protege contra reload acidental)
+    const snapshot = await loadSessionSnapshot();
+    if(snapshot){
+      snapshot.completedExercises.forEach(id=>{ if(!completedExercises.includes(id)) completedExercises.push(id); });
+      Object.entries(snapshot.exercises).forEach(([exId, data])=>{
+        const log = data.log || [];
+        // corrige snapshots antigos salvos com o número da série desatualizado
+        const correctedCurrentSet = Math.max(data.currentSet || 1, log.length + 1);
+        sessionState[exId] = {
+          currentSet: correctedCurrentSet, log: log, targetUsed: data.targetUsed,
+          resting:false, restEndTs:0, restInterval:null,
+          setStarted:false, setStartTime:Date.now(), busy:false,
+          plankPhase:'idle', plankInterval:null, plankStartTs:0, plankCount:4,
+          transitioning:false, transitionEndTs:0, transitionInterval:null
+        };
+      });
+    }
+
+    const todayExercises = todaySplit ? EXERCISES.filter(ex => ex.split.includes(todaySplit)) : EXERCISES;
+
+    let currentBlock = null;
+    let blockDiv = null;
+    todayExercises.forEach(ex=>{
+      if(completedExercises.includes(ex.id)) return; // já concluído (restaurado do snapshot) — não recria a linha
+      if(ex.block !== currentBlock){
+        currentBlock = ex.block;
+        blockDiv = document.createElement('div');
+        blockDiv.className = 'block-group';
+        blockDiv.innerHTML = `<h3>${currentBlock}</h3>`;
+        container.appendChild(blockDiv);
+      }
+      const row = document.createElement('div');
+      row.className = 'ex-input-row';
+      row.setAttribute('data-ex-id', ex.id);
+      row.innerHTML = renderExerciseCard(ex, hist);
+      blockDiv.appendChild(row);
+    });
+    historyCache = hist;
+    todayExercises.forEach(ex=>{ if(!completedExercises.includes(ex.id)) wireExerciseCard(ex.id, ex); });
+    renderCompletedCard();
+  }
+  // ---------- audio brief (resumo falado do treino) ----------
+  let chosenVoice = null;
+
+  function pickFemaleVoice(){
+    const voices = window.speechSynthesis.getVoices();
+    const pt = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('pt'));
+    const pool = pt.length ? pt : voices;
+    const femaleHints = ['female','luciana','maria','joana','fernanda','camila','vitória','vitoria','google português do brasil','ines','inês'];
+    let pick = pool.find(v => femaleHints.some(h => v.name.toLowerCase().includes(h)));
+    if(!pick) pick = pool[0] || voices[0] || null;
+    return pick;
+  }
+
+  function estimateSessionMinutes(){
+    const t = todayInfo();
+    const todaySplit = DAY_SPLIT[t.dow] || null;
+    const todayExercises = todaySplit ? EXERCISES.filter(ex => ex.split.includes(todaySplit)) : EXERCISES;
+    let totalSec = 0;
+    todayExercises.forEach(ex=>{
+      const activeSec = ex.isTime ? ex.repsTarget : (ex.bodyweight ? 20 : 35);
+      totalSec += ex.sets * activeSec;
+      totalSec += (ex.sets - 1) * ex.restSeconds;
+      totalSec += 30; // tempo de preparação real pro próximo aparelho
+    });
+    return Math.round(totalSec / 60);
+  }
+
+  function buildBriefText(){
+    const t = todayInfo();
+    const now = new Date();
+    const horaAtual = now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+    const minutos = estimateSessionMinutes();
+    const fim = new Date(now.getTime() + minutos*60000);
+    const horaFim = fim.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+    const groups = Array.from(document.querySelectorAll('.block-group h3')).map(h=>h.textContent.trim());
+
+    let txt = `Bom dia... são ${horaAtual}, e o treino já está te esperando. `;
+    txt += `Hoje é ${DIAS_PT[t.dow]}, e a sessão de hoje deve levar, mais ou menos, ${minutos} minutos... `;
+    txt += `então, se tudo correr bem, você termina por volta de ${horaFim}. `;
+    txt += `Enquanto você faz a mobilidade, deixa eu te contar como vai ser. `;
+    groups.forEach((g)=>{
+      txt += `${g}... `;
+    });
+    txt += `Você vai passar pelo bloco de força, depois pelas superséries de definição, e fecha com o funcional de core. `;
+    txt += `Vai no seu ritmo, com presença... consistência importa mais que perfeição. `;
+    txt += `Bora, com leveza. Boa sessão!`;
+    return txt;
+  }
+
+  function playBrief(){
+    if(!('speechSynthesis' in window)){
+      document.getElementById('voiceNote').textContent = 'Este navegador não suporta leitura em voz alta.';
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(buildBriefText());
+    utter.lang = 'pt-BR';
+    utter.pitch = 0.82;   // mesma frequência de contralto
+    utter.rate = 0.98;    // um pouco mais fluido/animado, sem perder a elegância
+    utter.volume = 1;
+    if(!chosenVoice) chosenVoice = pickFemaleVoice();
+    if(chosenVoice) utter.voice = chosenVoice;
+
+    document.getElementById('playBriefBtn').style.display = 'none';
+    document.getElementById('stopBriefBtn').style.display = 'block';
+    document.getElementById('voiceNote').textContent = chosenVoice
+      ? `Voz: ${chosenVoice.name}`
+      : 'Usando voz padrão do dispositivo (nenhuma voz em português encontrada).';
+
+    utter.onend = () => {
+      document.getElementById('playBriefBtn').style.display = 'block';
+      document.getElementById('stopBriefBtn').style.display = 'none';
+    };
+    utter.onerror = utter.onend;
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  function stopBrief(){
+    window.speechSynthesis.cancel();
+    document.getElementById('playBriefBtn').style.display = 'block';
+    document.getElementById('stopBriefBtn').style.display = 'none';
+  }
+
+  document.getElementById('playBriefBtn').addEventListener('click', playBrief);
+  document.getElementById('stopBriefBtn').addEventListener('click', stopBrief);
+
+  // vozes carregam de forma assíncrona em alguns navegadores
+  if('speechSynthesis' in window){
+    window.speechSynthesis.onvoiceschanged = () => { chosenVoice = pickFemaleVoice(); };
+  }
+
+  document.querySelectorAll('#warmupList input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      cb.nextElementSibling.classList.toggle('done', cb.checked);
+    });
+  });
+
+  document.getElementById('diffRow').addEventListener('click', (e)=>{
+    const dot = e.target.closest('.diff-dot');
+    if(!dot) return;
+    document.querySelectorAll('.diff-dot').forEach(d=>d.classList.remove('selected'));
+    dot.classList.add('selected');
+    selectedDiff = dot.dataset.v;
+  });
+
+  let timerInterval = null, seconds = 0, running = false;
+  function fmt(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = (s%60).toString().padStart(2,'0');
+    return `${m}:${sec}`;
+  }
+  document.getElementById('timerToggle').addEventListener('click', (e)=>{
+    running = !running;
+    e.target.textContent = running ? 'Pausar' : 'Continuar';
+    if(running){
+      timerInterval = setInterval(()=>{
+        seconds++;
+        document.getElementById('timerDisplay').textContent = fmt(seconds);
+      }, 1000);
+    } else {
+      clearInterval(timerInterval);
+    }
+  });
+  document.getElementById('timerReset').addEventListener('click', ()=>{
+    clearInterval(timerInterval);
+    running = false; seconds = 0;
+    document.getElementById('timerDisplay').textContent = '00:00';
+    document.getElementById('timerToggle').textContent = 'Iniciar';
+  });
+
+  async function addLogEntry(entry){
+    const logs = await loadLogs();
+    const deduped = logs.filter(l => l.date !== entry.date);
+    deduped.unshift(entry);
+    await saveLogs(deduped);
+  }
+
+  function buildSessionSummary(){
+    const parts = [];
+    EXERCISES.forEach(ex=>{
+      const st = sessionState[ex.id];
+      if(st && st.log.length > 0){
+        const lastSet = st.log[st.log.length-1];
+        const txt = ex.bodyweight
+          ? (ex.isTime ? `${ex.name} ${lastSet.reps}s` : `${ex.name} ${lastSet.reps}reps`)
+          : `${ex.name} ${lastSet.weight}kg×${lastSet.reps}`;
+        parts.push(`${txt} (${st.log.length}/${ex.sets} séries)`);
+      }
+    });
+    return parts.join(' · ');
+  }
+
+  document.getElementById('saveLogBtn').addEventListener('click', async (ev)=>{
+    const btn = ev.currentTarget;
+    if(btn.disabled) return;
+    btn.disabled = true;
+    const t = todayInfo();
+    const summary = buildSessionSummary();
+    if(!summary){
+      alert('Conclua pelo menos uma série de algum exercício antes de fechar a sessão.');
+      btn.disabled = false;
+      return;
+    }
+    const notes = document.getElementById('workedField').value.trim();
+    const weightKg = await getCurrentBodyWeightKg();
+    let strengthKcal = 0;
+    completedExercises.forEach(exId=>{
+      const ex = EXERCISES.find(e=>e.id===exId);
+      const st = sessionState[exId];
+      if(!ex || !st) return;
+      const validSets = st.log.filter(l=>!l.skipped);
+      const exTime = validSets.reduce((sum,l)=>sum + (l.durationSec||0), 0);
+      if(weightKg) strengthKcal += kcalFromMet(ex.met, weightKg, exTime/60);
+    });
+    const cardioAll = await loadCardioLogs();
+    const cardioKcalToday = cardioAll.filter(e=>e.date===t.iso).reduce((sum,e)=>sum+(e.kcal||0),0);
+    const totalKcalToday = weightKg ? Math.round(strengthKcal + cardioKcalToday) : null;
+    const entry = {
+      date: t.iso, day: DIAS_PT[t.dow],
+      worked: summary + (notes ? ` — Obs: ${notes}` : ''),
+      difficulty: selectedDiff || '—', ready: '—',
+      next: document.getElementById('nextField').value.trim(),
+      skipped: false, duration: seconds, kcal: totalKcalToday
+    };
+    await addLogEntry(entry);
+    resetForm();
+    btn.textContent = 'Sessão fechada ✓';
+    alert('Sessão fechada. Bom treino hoje.');
+    renderDash();
+  });
+
+  document.getElementById('skipBtn').addEventListener('click', async (ev)=>{
+    const btn = ev.currentTarget;
+    if(btn.disabled) return;
+    btn.disabled = true;
+    const t = todayInfo();
+    const entry = {
+      date: t.iso, day: DIAS_PT[t.dow],
+      worked: 'Treino pulado — gestão de energia, sem culpa.',
+      difficulty:'—', ready:'—', next:'', skipped:true, duration:0
+    };
+    await addLogEntry(entry);
+    resetForm();
+    alert('Tudo bem. Amanhã retoma.');
+    renderDash();
+  });
+
+  function resetForm(){
+    document.getElementById('workedField').value='';
+    document.getElementById('nextField').value='';
+    selectedDiff = null;
+    document.querySelectorAll('.diff-dot').forEach(d=>d.classList.remove('selected'));
+    document.querySelectorAll('#warmupList input[type=checkbox]').forEach(cb=>{cb.checked=false; cb.nextElementSibling.classList.remove('done');});
+    clearInterval(timerInterval); running=false; seconds=0;
+    document.getElementById('timerDisplay').textContent='00:00';
+    document.getElementById('timerToggle').textContent='Iniciar';
+  }
+
+  function isoOfDaysAgo(n){
+    const d = new Date(); d.setDate(d.getDate()-n);
+    return d.toISOString().slice(0,10);
+  }
+
+  async function renderEvolution(){
+    const hist = await loadHistory();
+    const list = document.getElementById('evolutionList');
+    const withData = EXERCISES.filter(ex => hist[ex.id] && hist[ex.id].length > 0);
+
+    if(withData.length === 0){
+      list.innerHTML = '<p class="empty">Registre a primeira sessão pra começar a ver a evolução aqui.</p>';
+      return;
+    }
+
+    list.innerHTML = '';
+    withData.forEach(ex=>{
+      const entries = hist[ex.id]; // mais recente primeiro
+      const latest = entries[0];
+      const prev = entries[1];
+
+      let deltaHTML = '';
+      if(prev && latest.weight !== '—' && prev.weight !== '—'){
+        const diff = parseFloat(latest.weight) - parseFloat(prev.weight);
+        if(diff > 0) deltaHTML = `<span class="evo-delta up">▲ +${diff}kg</span>`;
+        else if(diff < 0) deltaHTML = `<span class="evo-delta down">▼ ${diff}kg</span>`;
+        else deltaHTML = `<span class="evo-delta flat">= mesma carga</span>`;
+      } else if(!prev){
+        deltaHTML = `<span class="evo-delta flat">1ª vez registrada</span>`;
+      }
+
+      const pills = entries.slice(0,6).reverse().map((e, i, arr)=>{
+        const isLatest = i === arr.length-1;
+        return `<span class="evo-pill${isLatest ? ' latest' : ''}">${e.weight}kg×${e.reps}</span>`;
+      }).join('');
+
+      const card = document.createElement('div');
+      card.className = 'evo-card';
+      card.innerHTML = `
+        <div class="evo-head"><span class="ex-title">${ex.name}</span>${deltaHTML}</div>
+        <div class="evo-history">${pills}</div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function renderWeekGrid(logs){
+    const grid = document.getElementById('weekGrid');
+    if(!grid) return;
+    const labels = ['S','T','Q','Q','S','S','D'];
+    const today = new Date();
+    const todayDow = today.getDay(); // 0=domingo
+    const daysSinceMonday = (todayDow + 6) % 7; // domingo=6, segunda=0, ...
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysSinceMonday);
+
+    grid.innerHTML = '';
+    for(let i=0;i<7;i++){
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const iso = d.toISOString().slice(0,10);
+      const dow = d.getDay();
+      const isRestDay = (dow === 0 || dow === 6); // domingo ou sábado
+      const isToday = d.toDateString() === today.toDateString();
+
+      const el = document.createElement('div');
+
+      if(isRestDay){
+        el.className = `week-day rest${isToday ? ' today' : ''}`;
+        el.innerHTML = `<span class="wd-lbl">${labels[i]}</span><span class="wd-mark">😴</span>`;
+        grid.appendChild(el);
+        continue;
+      }
+
+      const isFuture = d > today && !isToday;
+      const doneLog = logs.find(l=>l.date===iso && !l.skipped);
+      const skippedLog = logs.find(l=>l.date===iso && l.skipped);
+
+      let stateClass = 'pending', mark = '';
+      if(doneLog){ stateClass = 'done'; mark = '✓'; }
+      else if(skippedLog){ stateClass = 'skipped'; mark = '–'; }
+      else if(isFuture){ stateClass = 'pending'; mark = ''; }
+
+      el.className = `week-day ${stateClass}${isToday ? ' today' : ''}`;
+      el.innerHTML = `<span class="wd-lbl">${labels[i]}</span><span class="wd-mark">${mark}</span>`;
+      grid.appendChild(el);
+    }
+  }
+
+  function fmtBwDate(iso){
+    return new Date(iso+'T12:00:00').toLocaleDateString('pt-BR');
+  }
+
+  async function renderBodyWeights(){
+    const list = document.getElementById('bwList');
+    if(!list) return;
+    const entries = await loadBodyWeights(); // mais recente primeiro
+    if(entries.length === 0){
+      list.innerHTML = '<p class="empty">Nenhum registro ainda.</p>';
+      return;
+    }
+    list.innerHTML = '';
+    entries.slice(0,10).forEach((e, idx)=>{
+      const prev = entries[idx+1];
+      let deltaHtml = '';
+      if(prev){
+        const diff = +(e.weight - prev.weight).toFixed(1);
+        if(diff !== 0){
+          const cls = diff < 0 ? 'down' : 'up';
+          const sign = diff > 0 ? '+' : '';
+          deltaHtml = `<span class="bw-delta ${cls}">${sign}${diff}kg</span>`;
+        } else {
+          deltaHtml = `<span class="bw-delta">=</span>`;
+        }
+      }
+      const row = document.createElement('div');
+      row.className = 'bw-row';
+      row.innerHTML = `<span class="bw-date">${fmtBwDate(e.date)}</span><span class="bw-val">${e.weight}kg</span>${deltaHtml}`;
+      list.appendChild(row);
+    });
+  }
+
+  document.getElementById('bwSaveBtn').addEventListener('click', async ()=>{
+    const input = document.getElementById('bwInput');
+    const val = parseFloat(input.value);
+    if(!val || val <= 0){ alert('Digita um peso válido antes de registrar.'); return; }
+    const entries = await loadBodyWeights();
+    const today = todayInfo().iso;
+    const filtered = entries.filter(e=>e.date !== today); // um registro por dia, sobrescreve se já existir
+    filtered.unshift({ date: today, weight: val });
+    await saveBodyWeights(filtered);
+    invalidateBodyWeightCache();
+    input.value = '';
+    await renderBodyWeights();
+    await renderCardioEstimatePreview();
+  });
+
+  // ---------- cardio livre (independente da bicicleta) ----------
+  const CARDIO_LABELS = {
+    corrida:'Corrida', caminhada:'Caminhada', bicicleta:'Bicicleta (rua/spinning)',
+    eliptico:'Elíptico', natacao:'Natação', outro:'Outro'
+  };
+
+  async function renderCardioEstimatePreview(){
+    const type = document.getElementById('cardioType').value;
+    const duration = parseFloat(document.getElementById('cardioDuration').value);
+    const distance = parseFloat(document.getElementById('cardioDistance').value);
+    const note = document.getElementById('cardioEstimateNote');
+    if(!duration || duration <= 0){
+      note.textContent = 'Preencha a duração pra ver a estimativa de calorias.';
+      return;
+    }
+    const weightKg = await getCurrentBodyWeightKg();
+    const { met, estimated, speedKmh } = metForCardio(type, distance || 0, duration);
+    if(!weightKg){
+      note.textContent = 'Registre seu peso corporal (aba Painel semanal) pra calcular calorias com precisão.';
+      return;
+    }
+    const kcal = kcalFromMet(met, weightKg, duration);
+    const speedTxt = speedKmh ? ` · ritmo ${speedKmh.toFixed(1)} km/h` : '';
+    const estTxt = estimated ? ' (estimativa — informe distância pro cálculo exato pelo ritmo)' : '';
+    note.textContent = `≈ ${Math.round(kcal)} kcal (MET ${met.toFixed(1)}${speedTxt})${estTxt}`;
+  }
+  ['cardioType','cardioDuration','cardioDistance'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', renderCardioEstimatePreview);
+    document.getElementById(id).addEventListener('change', renderCardioEstimatePreview);
+  });
+
+  async function refreshTodayLogKcal(){
+    const t = todayInfo();
+    const logs = await loadLogs();
+    const existing = logs.find(l => l.date === t.iso && !l.skipped);
+    if(!existing) return; // sessão ainda não foi fechada hoje — nada a atualizar
+
+    const weightKg = await getCurrentBodyWeightKg();
+    let strengthKcal = 0;
+    completedExercises.forEach(exId=>{
+      const ex = EXERCISES.find(e=>e.id===exId);
+      const st = sessionState[exId];
+      if(!ex || !st) return;
+      const validSets = st.log.filter(l=>!l.skipped);
+      const exTime = validSets.reduce((sum,l)=>sum + (l.durationSec||0), 0);
+      if(weightKg) strengthKcal += kcalFromMet(ex.met, weightKg, exTime/60);
+    });
+    const cardioAll = await loadCardioLogs();
+    const cardioKcalToday = cardioAll.filter(e=>e.date===t.iso).reduce((sum,e)=>sum+(e.kcal||0),0);
+    existing.kcal = weightKg ? Math.round(strengthKcal + cardioKcalToday) : null;
+    await addLogEntry(existing);
+  }
+
+  async function renderCardioTodayList(){
+    const wrap = document.getElementById('cardioTodayList');
+    const all = await loadCardioLogs();
+    const today = todayInfo().iso;
+    const todays = all.filter(e=>e.date===today);
+    if(todays.length === 0){ wrap.innerHTML = ''; return; }
+    let totalKcal = 0;
+    const rows = todays.map(e=>{
+      totalKcal += e.kcal || 0;
+      const distTxt = e.distanceKm ? ` · ${e.distanceKm}km` : '';
+      return `<div class="set-log-row">
+        <span>${CARDIO_LABELS[e.type] || e.type} — ${e.durationMin}min${distTxt}</span>
+        <span>${Math.round(e.kcal)} kcal <button class="skip-set-btn" data-cardio-del="${e.id}" style="margin-left:8px;">remover</button></span>
+      </div>`;
+    }).join('');
+    wrap.innerHTML = `<p class="field-label" style="margin-top:0;">Cardio de hoje — ${Math.round(totalKcal)} kcal no total</p>${rows}`;
+    wrap.querySelectorAll('[data-cardio-del]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id = btn.getAttribute('data-cardio-del');
+        const remaining = (await loadCardioLogs()).filter(e=>e.id !== id);
+        await saveCardioLogs(remaining);
+        await renderCardioTodayList();
+        await refreshTodayLogKcal();
+        renderDash();
+      });
+    });
+  }
+
+  document.getElementById('cardioSaveBtn').addEventListener('click', async ()=>{
+    const type = document.getElementById('cardioType').value;
+    const durationInput = document.getElementById('cardioDuration');
+    const distanceInput = document.getElementById('cardioDistance');
+    const duration = parseFloat(durationInput.value);
+    const distance = parseFloat(distanceInput.value) || 0;
+    if(!duration || duration <= 0){ alert('Preenche a duração antes de registrar.'); return; }
+    const weightKg = await getCurrentBodyWeightKg();
+    if(!weightKg){
+      alert('Registre seu peso corporal na aba "Painel semanal" primeiro — o cálculo de calorias precisa dele pra ser preciso.');
+      return;
+    }
+    const { met } = metForCardio(type, distance, duration);
+    const kcal = kcalFromMet(met, weightKg, duration);
+    const t = todayInfo();
+    const entry = {
+      id: 'c' + Date.now(), date: t.iso, type, durationMin: duration,
+      distanceKm: distance || null, met, kcal, timestamp: Date.now()
+    };
+    const all = await loadCardioLogs();
+    all.unshift(entry);
+    await saveCardioLogs(all);
+    durationInput.value = '';
+    distanceInput.value = '';
+    document.getElementById('cardioEstimateNote').textContent = '';
+    await renderCardioTodayList();
+    await refreshTodayLogKcal();
+    renderDash();
+    alert(`Cardio registrado — ≈ ${Math.round(kcal)} kcal.`);
+  });
+
+  async function renderDash(){
+    const logs = await loadLogs();
+    document.getElementById('statTotal').textContent = logs.filter(l=>!l.skipped).length;
+    await renderEvolution();
+    await renderBodyWeights();
+    renderWeekGrid(logs);
+
+    const todayForWeek = new Date();
+    const daysSinceMondayForWeek = (todayForWeek.getDay() + 6) % 7;
+    const mondayForWeek = new Date(todayForWeek);
+    mondayForWeek.setDate(todayForWeek.getDate() - daysSinceMondayForWeek);
+    const thisWeekIsos = [];
+    for(let i=0;i<5;i++){
+      const d = new Date(mondayForWeek);
+      d.setDate(mondayForWeek.getDate() + i);
+      thisWeekIsos.push(d.toISOString().slice(0,10));
+    }
+    const doneThisWeek = logs.filter(l=>!l.skipped && thisWeekIsos.includes(l.date)).length;
+    document.getElementById('statWeek').textContent = `${doneThisWeek}/5`;
+
+    let streak = 0;
+    for(let i=0;i<365;i++){
+      const iso = isoOfDaysAgo(i);
+      const hit = logs.find(l=>l.date===iso && !l.skipped);
+      if(hit) streak++;
+      else if(i===0) continue;
+      else break;
+    }
+    document.getElementById('statStreak').textContent = streak;
+
+    const hist = document.getElementById('logHistory');
+    if(logs.length===0){
+      hist.innerHTML = '<p class="empty">Nenhum registro ainda. Sua primeira sessão aparece aqui.</p>';
+    } else {
+      hist.innerHTML = '';
+      logs.slice(0,20).forEach(l=>{
+        const el = document.createElement('div');
+        el.className = 'log-entry' + (l.skipped ? ' skipped' : '');
+        const dt = new Date(l.date+'T12:00:00').toLocaleDateString('pt-BR');
+        el.innerHTML = `
+          <div class="top-row"><span class="day">${l.day.charAt(0).toUpperCase()+l.day.slice(1)}</span><span class="date">${dt}</span></div>
+          <div class="work">${l.worked}</div>
+          ${!l.skipped ? `<div class="foot"><span>Energia: ${l.difficulty}</span><span>Próx: ${l.next || '—'}</span>${l.kcal ? `<span>≈ ${l.kcal} kcal</span>` : ''}</div>` : ''}
+        `;
+        hist.appendChild(el);
+      });
+    }
+
+    // capa: espelha os mesmos números
+    const coverStreak = document.getElementById('coverStreak');
+    const coverWeek = document.getElementById('coverWeek');
+    const coverTotal = document.getElementById('coverTotal');
+    if(coverStreak) coverStreak.textContent = document.getElementById('statStreak').textContent;
+    if(coverWeek) coverWeek.textContent = document.getElementById('statWeek').textContent;
+    if(coverTotal) coverTotal.textContent = document.getElementById('statTotal').textContent;
+  }
+
+  async function buildReportText(){
+    const t = todayInfo();
+    const weightKg = await getCurrentBodyWeightKg();
+    let totalWeight = 0, totalTime = 0, totalKcal = 0;
+    const lines = [];
+    lines.push(`🏋️ Treino — ${t.label.charAt(0).toUpperCase()+t.label.slice(1)}`);
+    lines.push('');
+    completedExercises.forEach(exId=>{
+      const ex = EXERCISES.find(e=>e.id===exId);
+      const st = sessionState[exId];
+      const validSets = st.log.filter(l=>!l.skipped);
+      let exTime = 0;
+      validSets.forEach(l=>{ totalWeight += (l.weight||0)*(l.reps||0); exTime += (l.durationSec||0); });
+      totalTime += exTime;
+      const exKcal = weightKg ? kcalFromMet(ex.met, weightKg, exTime/60) : 0;
+      totalKcal += exKcal;
+      lines.push(`${ex.name}:`);
+      st.log.forEach((l,i)=>{
+        if(l.skipped){ lines.push(`  Série ${i+1}: pulada`); return; }
+        const txt = ex.bodyweight ? (ex.isTime ? `${l.reps}s` : `${l.reps} reps`) : `${l.weight}kg × ${l.reps} reps`;
+        const flag = l.tempoFlag === 'fast' ? ' (rápida demais)' : (l.tempoFlag === 'slow' ? ' (lenta demais)' : '');
+        lines.push(`  Série ${i+1}: ${txt}${flag}`);
+      });
+      const praise = praiseFor(ex, st.log, st.targetUsed);
+      if(praise) lines.push(`  → ${praise}`);
+      if(weightKg && exKcal > 0) lines.push(`  ≈ ${Math.round(exKcal)} kcal`);
+      lines.push('');
+    });
+    const kcalTxt = weightKg ? ` · ${Math.round(totalKcal)} kcal` : '';
+    lines.push(`Resumo: ${completedExercises.length}/${todayExerciseCount()} exercícios · ${Math.round(totalWeight)}kg totais · ${Math.round(totalTime/60)} min ativos${kcalTxt}`);
+
+    const cardioAll = await loadCardioLogs();
+    const cardioToday = cardioAll.filter(e=>e.date===t.iso);
+    if(cardioToday.length > 0){
+      lines.push('');
+      lines.push('🏃 Cardio livre:');
+      let cardioKcal = 0;
+      cardioToday.forEach(e=>{
+        cardioKcal += e.kcal || 0;
+        const distTxt = e.distanceKm ? ` · ${e.distanceKm}km` : '';
+        lines.push(`  ${CARDIO_LABELS[e.type] || e.type} — ${e.durationMin}min${distTxt} — ≈ ${Math.round(e.kcal)} kcal`);
+      });
+      lines.push(`  Total cardio: ≈ ${Math.round(cardioKcal)} kcal`);
+    }
+    return lines.join('\n');
+  }
+
+  document.getElementById('shareReportBtn').addEventListener('click', async ()=>{
+    const text = await buildReportText();
+    const noteEl = document.getElementById('shareNote');
+    const areaEl = document.getElementById('shareTextarea');
+
+    if(navigator.share){
+      try{
+        await navigator.share({ title: 'Relatório de treino', text: text });
+        return;
+      }catch(e){ /* usuária cancelou ou share falhou — cai pro fallback abaixo */ }
+    }
+
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      try{
+        await navigator.clipboard.writeText(text);
+        noteEl.style.display = 'block';
+        noteEl.textContent = 'Copiado! Cole (colar) na conversa com o Claude.';
+        areaEl.style.display = 'none';
+        return;
+      }catch(e){ /* clipboard bloqueado — mostra texto pra copiar manualmente */ }
+    }
+
+    areaEl.value = text;
+    areaEl.style.display = 'block';
+    areaEl.select();
+    noteEl.style.display = 'block';
+    noteEl.textContent = 'Copie o texto abaixo manualmente e cole na conversa.';
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', async ()=>{
+    if(!confirm('Apagar todo o histórico de treino? Isso não pode ser desfeito.')) return;
+    await saveLogs([]);
+    renderDash();
+  });
+
+  document.getElementById('resetTodayBtn').addEventListener('click', async ()=>{
+    if(!confirm('Zerar as séries marcadas hoje? O histórico de dias anteriores não é afetado.')) return;
+    completedExercises.length = 0;
+    Object.keys(sessionState).forEach(k => delete sessionState[k]);
+    try{ await appStorage.set(SESSION_SNAPSHOT_KEY, '', false); }catch(e){}
+    renderSession();
+  });
+
+  const tabSessionBtn = document.getElementById('tabSessionBtn');
+  const tabDashBtn = document.getElementById('tabDashBtn');
+  const tabHistoryBtn = document.getElementById('tabHistoryBtn');
+  const viewSession = document.getElementById('viewSession');
+  const viewDash = document.getElementById('viewDash');
+  const viewHistory = document.getElementById('viewHistory');
+
+  function showTab(which){
+    tabSessionBtn.classList.toggle('active', which==='session');
+    tabDashBtn.classList.toggle('active', which==='dash');
+    tabHistoryBtn.classList.toggle('active', which==='history');
+    viewSession.style.display = which==='session' ? 'block' : 'none';
+    viewDash.style.display = which==='dash' ? 'block' : 'none';
+    viewHistory.style.display = which==='history' ? 'block' : 'none';
+  }
+
+  tabSessionBtn.addEventListener('click', ()=> showTab('session'));
+  tabDashBtn.addEventListener('click', ()=>{ showTab('dash'); renderDash(); });
+  tabHistoryBtn.addEventListener('click', ()=>{ showTab('history'); renderHistoryView(); });
+
+  const MESES_PT = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+  async function renderHistoryView(){
+    const logs = await loadLogs();
+    const yearSel = document.getElementById('histYear');
+    const monthSel = document.getElementById('histMonth');
+
+    if(logs.length === 0){
+      yearSel.innerHTML = '<option>—</option>';
+      monthSel.innerHTML = '<option>—</option>';
+      document.getElementById('histMonthLabel').textContent = 'Sem registros ainda';
+      document.getElementById('histMonthList').innerHTML = '<p class="empty">Sem registros neste período.</p>';
+      document.getElementById('histStatDone').textContent = '0';
+      document.getElementById('histStatSkipped').textContent = '0';
+      document.getElementById('histStatMinutes').textContent = '0';
+      return;
+    }
+
+    const years = [...new Set(logs.map(l => l.date.slice(0,4)))].sort((a,b)=>b-a);
+    const prevYear = yearSel.value;
+    yearSel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+    if(years.includes(prevYear)) yearSel.value = prevYear;
+
+    const selectedYear = yearSel.value;
+    const monthsWithData = [...new Set(logs.filter(l=>l.date.slice(0,4)===selectedYear).map(l=>l.date.slice(5,7)))].sort((a,b)=>b-a);
+    const prevMonth = monthSel.value;
+    monthSel.innerHTML = monthsWithData.map(m => `<option value="${m}">${MESES_PT[parseInt(m,10)-1]}</option>`).join('');
+    if(monthsWithData.includes(prevMonth)) monthSel.value = prevMonth;
+
+    const selectedMonth = monthSel.value;
+    const filtered = logs.filter(l => l.date.slice(0,4)===selectedYear && l.date.slice(5,7)===selectedMonth)
+                          .sort((a,b)=> b.date.localeCompare(a.date));
+
+    const done = filtered.filter(l=>!l.skipped);
+    const skipped = filtered.filter(l=>l.skipped);
+    const minutes = done.reduce((sum,l)=> sum + Math.round((l.duration||0)/60), 0);
+
+    document.getElementById('histStatDone').textContent = done.length;
+    document.getElementById('histStatSkipped').textContent = skipped.length;
+    document.getElementById('histStatMinutes').textContent = minutes;
+    document.getElementById('histMonthLabel').textContent = `${MESES_PT[parseInt(selectedMonth,10)-1]} de ${selectedYear}`;
+
+    const list = document.getElementById('histMonthList');
+    if(filtered.length === 0){
+      list.innerHTML = '<p class="empty">Sem registros neste período.</p>';
+    } else {
+      list.innerHTML = '';
+      filtered.forEach(l=>{
+        const el = document.createElement('div');
+        el.className = 'log-entry' + (l.skipped ? ' skipped' : '');
+        const dt = new Date(l.date+'T12:00:00').toLocaleDateString('pt-BR');
+        el.innerHTML = `
+          <div class="top-row"><span class="day">${l.day.charAt(0).toUpperCase()+l.day.slice(1)}</span><span class="date">${dt}</span></div>
+          <div class="work">${l.worked}</div>
+          ${!l.skipped ? `<div class="foot"><span>Energia: ${l.difficulty}</span><span>Próx: ${l.next || '—'}</span>${l.kcal ? `<span>≈ ${l.kcal} kcal</span>` : ''}</div>` : ''}
+        `;
+        list.appendChild(el);
+      });
+    }
+  }
+
+  document.getElementById('histYear').addEventListener('change', renderHistoryView);
+  document.getElementById('histMonth').addEventListener('change', renderHistoryView);
+
+  async function setSplitOverride(split){
+    const t = todayInfo();
+    if(split === null){
+      try{ await appStorage.set('gym-split-override', ''); }catch(e){}
+    } else {
+      try{ await appStorage.set('gym-split-override', JSON.stringify({date:t.iso, split})); }catch(e){}
+    }
+    renderSession();
+  }
+
+  document.getElementById('forceABtn').addEventListener('click', ()=>{
+    if(!confirm('Forçar Treino A pra hoje? Se você já começou o outro treino hoje, os exercícios já feitos continuam salvos, mas a lista muda.')) return;
+    setSplitOverride('A');
+  });
+  document.getElementById('forceBBtn').addEventListener('click', ()=>{
+    if(!confirm('Forçar Treino B pra hoje? Se você já começou o outro treino hoje, os exercícios já feitos continuam salvos, mas a lista muda.')) return;
+    setSplitOverride('B');
+  });
+  document.getElementById('forceAutoBtn').addEventListener('click', ()=>{
+    setSplitOverride(null);
+  });
+
+  (function initCover(){
+    const cover = document.getElementById('coverScreen');
+    const titleEl = document.getElementById('coverTitle');
+    const startBtn = document.getElementById('coverStartBtn');
+    if(!cover || !startBtn) return;
+
+    titleEl.textContent = 'Hoje é o melhor dia para treinar';
+
+    startBtn.addEventListener('click', ()=>{
+      cover.style.display = 'none';
+    });
+  })();
+
+  renderSession();
+  renderDash();
+  renderCardioTodayList();
+  initMusicPlayer();
+
+  // registrar service worker pra PWA funcionar offline e ser instalável
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(err => {
+      console.log('SW registration failed:', err);
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
